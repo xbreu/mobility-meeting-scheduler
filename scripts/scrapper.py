@@ -5,7 +5,7 @@ from selenium.webdriver.chrome.service import Service
 
 import json
 import time
-import datetime
+from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 
 NUM_DAYS = 31
@@ -43,72 +43,14 @@ def input_fields(origin, destination, date):
     input_box.send_keys(Keys.CONTROL + "a")
     input_box.send_keys(Keys.DELETE)
     input_box.send_keys(date)
-    # # Return Date
-    # input_box = driver.find_element(By.CSS_SELECTOR, 'input[aria-label="Return"][aria-describedby="i25"]')
-    # input_box.send_keys(Keys.CONTROL + "a")
-    # input_box.send_keys(Keys.DELETE)
-    # input_box.send_keys(date)
 
     # Search Button
     time.sleep(2)
     driver.find_element(By.XPATH, '//button[starts-with(@aria-label, "Done.")]').click()
     time.sleep(2)
 
-# def parse_price(price, origin, destination):
-#     tokens = price.split(",")
-#     price = int(tokens[0][1:], 10)
 
-#     for token in tokens:
-#         if (token.find(' to ') != -1):
-#             dates = token.split(" to ")
-
-#     departure_date = datetime.datetime.strptime(dates[0].strip() + " " + str(datetime.date.today().year), '%b %d %Y').date()
-#     return_date = datetime.datetime.strptime(dates[1].strip() + " " + str(datetime.date.today().year), '%b %d %Y').date()
-
-#     if departure_date < datetime.date.today():
-#         departure_date = departure_date + relativedelta(years = 1)
-#         return_date = return_date + relativedelta(years = 1)
-
-#     return {
-#         "price": price,
-#         "origin": origin,
-#         "destination": destination,
-#         "departure_date": departure_date.strftime('%d/%m/%Y'),
-#         "departure_weekday": departure_date.weekday(),
-#         "return_date": return_date.strftime('%d/%m/%Y'),
-#         "return_weekday": return_date.weekday()
-#     }
-
-# def get_prices(origin, destination):
-#     grid_button = driver.find_element(By.CSS_SELECTOR, 'button[jsname="KqtnKd"]')
-#     grid_button.click()
-#     time.sleep(2)
-
-#     modal = driver.find_element(By.CSS_SELECTOR, 'div[jsname="rZHESd"]')
-#     next_button = modal.find_element(By.CSS_SELECTOR, 'button[jsname="m4eCTc"]')
-
-#     prices = []
-
-#     for k in range(NUM_DAYS):
-#         if k > 0:
-#             next_button.click()
-#             time.sleep(2)
-
-#         index = ((k + 1) % 9) + 1
-#         current_day = modal.find_element(By.XPATH, '//div[1]/div/div[2]/span/div/div[1]/div/c-wiz/div/div/c-wiz/div/div[1]/div[2]/div[1]/div/div[1]/div[' + str(index) + ']/div/div/span[2]').get_attribute("innerText")
-#         day_prices = modal.find_elements(By.XPATH, '//div[1]/div/div[2]/span/div/div[1]/div/c-wiz/div/div/c-wiz/div/div[1]/div[2]/div[1]/div/div[2]/div/div[contains(@aria-label, "' + current_day + ' to ")]')
-#         day_prices = [parse_price(x.get_attribute("aria-label"), origin, destination) for x in day_prices]
-
-#         prices = prices + day_prices
-
-
-#     cancel_button = driver.find_element(By.CSS_SELECTOR, "#yDmH0d > div.QLZdg > div.cedvUc.JdWsKb.AR8FUe.eXUIm > div.xkSIab > div.Bz9vRc.z0YF1 > div.WgNj4c > div:nth-child(1) > div > button")
-#     cancel_button.click()
-#     time.sleep(0.5)
-
-#     return prices
-
-def get_flight_info(origin, destination):
+def get_flight_info(origin, destination, date):
     best_flights = driver.find_element(By.XPATH, '//h3[contains(text(), "Best flights")]/../../../..')
     departure_times = best_flights.find_elements(By.XPATH, './/span[starts-with(@aria-label, "Departure time")]')
     arrival_times = best_flights.find_elements(By.XPATH, './/span[starts-with(@aria-label, "Arrival time")]')
@@ -117,11 +59,17 @@ def get_flight_info(origin, destination):
 
     flights = []
     for i in range(len(durations)):
+        departure = datetime.strptime('2022 ' + date + ' ' + departure_times[(i+1)*2-2].text, "%Y %m/%d %H:%M %p")
+        if '+1' in arrival_times[(i+1)*2-2].text: # If it has +1 it means arrival is on the next day
+            arrival = datetime.strptime('2022 ' + date + ' ' + arrival_times[(i+1)*2-2].text[:-2], "%Y %m/%d %H:%M %p") + timedelta(days=1)
+        else:
+            arrival = datetime.strptime('2022 ' + date + ' ' + arrival_times[(i+1)*2-2].text, "%Y %m/%d %H:%M %p")
+        
         flights.append({
             "origin": origin,
             "destination": destination,
-            "departure": departure_times[(i+1)*2-2].text, # Departures and arrivals are duplicated 0, 2, 4
-            "arrival": arrival_times[(i+1)*2-2].text,
+            "departure": departure.strftime('%d/%m/%Y, %H:%M:%S'),
+            "arrival": arrival.strftime('%d/%m/%Y, %H:%M:%S'),
             "duration": durations[i].text,
             "price": prices[(i+1)*3-3].text # Price appears 3 times (2 are empty) 0, 3, 6
         })
@@ -133,24 +81,19 @@ def get_flight_info(origin, destination):
 def find_flights(origin, destination):
     driver.get("https://www.google.com/travel/flights")
     time.sleep(1)
-    input_fields(origin, destination, '5/5')
+    date = '5/5'
+    input_fields(origin, destination, date)
     i = 0
     while(i < 5):
         try :
-            time.sleep(1)
-            flights = get_flight_info(origin, destination)
+            time.sleep(3)
+            flights = get_flight_info(origin, destination, date)
             break
         except Exception as e:
             print(e)
         finally:
             i += 1
-    # flights = get_prices(origin, destination)
-
-    # if destination in ORIGINS:
-    #     driver.find_element(By.CSS_SELECTOR, 'button[aria-label="Swap origin and destination."]').click()
-    #     time.sleep(2)
-    #     flights = flights + get_prices(destination, origin)
-    print(flights)
+            
     return flights
 
 def write_origin_flights(flights, origin):
@@ -163,7 +106,7 @@ def write_origin_flights(flights, origin):
     return other_flights
 
 
-FILE = open('test.json', 'w', encoding='utf-8')
+FILE = open('../data/flights.json', 'w', encoding='utf-8')
 FILE.write("[")
 
 s = Service('/usr/bin/chromedriver')
