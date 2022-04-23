@@ -82,7 +82,7 @@ def get_flight_info(origin, destination, date):
             "departure": departure.strftime('%d/%m/%Y, %H:%M:%S'),
             "arrival": arrival.strftime('%d/%m/%Y, %H:%M:%S'),
             "duration": durations[i].text,
-            "price": prices[(i+1)*3-3].text # Price appears 3 times (2 are empty) 0, 3, 6
+            "price": prices[(i+1)*3-3].text # Price appears 3 times on page (2 are empty strings)
         })
     
     return flights
@@ -131,7 +131,8 @@ flights = []
 for origin in ORIGINS:
     for destination in DESTINATIONS:
         if origin == destination: continue
-        flights = flights + find_flights(origin, destination)
+        flights += find_flights(origin, destination) # Search departure
+        flights += find_flights(destination, origin) # Search return
 
     DESTINATIONS.remove(origin)
     flights = write_origin_flights(flights, origin)
