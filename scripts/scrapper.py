@@ -8,10 +8,21 @@ import time
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 
-NUM_DAYS = 31
+NUM_DAYS = 5
 
-ORIGINS = ['Budapest', 'Zagreb', 'Krakow']
+ORIGINS = ['Budapest', 'Zagreb']
 DESTINATIONS = ORIGINS + ['Wien']
+
+def try_x_times(x, time_between_tries, function, *args):
+    i = 0
+    while(i < x):
+        try :
+            return function(*args)
+        except Exception as e:
+            print(e)
+        i += 1
+        time.sleep(time_between_tries)
+
 
 def input_fields(origin, destination, date):
     # Origin
@@ -59,11 +70,11 @@ def get_flight_info(origin, destination, date):
 
     flights = []
     for i in range(len(durations)):
-        departure = datetime.strptime('2022 ' + date + ' ' + departure_times[(i+1)*2-2].text, "%Y %m/%d %H:%M %p")
+        departure = datetime.strptime('2022 ' + date + ' ' + departure_times[(i+1)*2-2].text, "%Y %d/%m %I:%M %p")
         if '+1' in arrival_times[(i+1)*2-2].text: # If it has +1 it means arrival is on the next day
-            arrival = datetime.strptime('2022 ' + date + ' ' + arrival_times[(i+1)*2-2].text[:-2], "%Y %m/%d %H:%M %p") + timedelta(days=1)
+            arrival = datetime.strptime('2022 ' + date + ' ' + arrival_times[(i+1)*2-2].text[:-2], "%Y %d/%m %I:%M %p") + timedelta(days=1)
         else:
-            arrival = datetime.strptime('2022 ' + date + ' ' + arrival_times[(i+1)*2-2].text, "%Y %m/%d %H:%M %p")
+            arrival = datetime.strptime('2022 ' + date + ' ' + arrival_times[(i+1)*2-2].text, "%Y %d/%m %I:%M %p")
         
         flights.append({
             "origin": origin,
@@ -82,18 +93,16 @@ def find_flights(origin, destination):
     driver.get("https://www.google.com/travel/flights")
     time.sleep(1)
     date = '5/5'
-    input_fields(origin, destination, date)
-    i = 0
-    while(i < 5):
-        try :
-            time.sleep(3)
-            flights = get_flight_info(origin, destination, date)
-            break
-        except Exception as e:
-            print(e)
-        finally:
-            i += 1
-            
+    date = datetime(2022, 5, 5)
+    end_date = date + timedelta(days=NUM_DAYS)
+    input_fields(origin, destination, date.strftime('%-d/%-m'))
+    flights = []
+    while(date != end_date):
+        flights += try_x_times(5, 3, get_flight_info, origin, destination, date.strftime('%-d/%-m'))
+        driver.find_element(By.XPATH, '//button[@data-delta="1"]').click() # Next day arrow
+        date += timedelta(days=1)
+        time.sleep(1)
+
     return flights
 
 def write_origin_flights(flights, origin):
