@@ -297,6 +297,150 @@
     },
     {
         "origin": "Zagreb",
+        "destination": "Budapest",
+        "departure": "05/05/2022, 18:45:00",
+        "arrival": "05/05/2022, 22:15:00",
+        "duration": "3 hr 30 min",
+        "price": "\u20ac215"
+    },
+    {
+        "origin": "Zagreb",
+        "destination": "Budapest",
+        "departure": "05/05/2022, 16:20:00",
+        "arrival": "05/05/2022, 20:15:00",
+        "duration": "3 hr 55 min",
+        "price": "\u20ac215"
+    },
+    {
+        "origin": "Zagreb",
+        "destination": "Budapest",
+        "departure": "05/05/2022, 13:35:00",
+        "arrival": "05/05/2022, 16:50:00",
+        "duration": "3 hr 15 min",
+        "price": "\u20ac263"
+    },
+    {
+        "origin": "Zagreb",
+        "destination": "Budapest",
+        "departure": "06/05/2022, 14:10:00",
+        "arrival": "06/05/2022, 20:50:00",
+        "duration": "6 hr 40 min",
+        "price": "\u20ac96"
+    },
+    {
+        "origin": "Zagreb",
+        "destination": "Budapest",
+        "departure": "06/05/2022, 14:35:00",
+        "arrival": "07/05/2022, 08:45:00",
+        "duration": "18 hr 10 min",
+        "price": "\u20ac125"
+    },
+    {
+        "origin": "Zagreb",
+        "destination": "Budapest",
+        "departure": "06/05/2022, 18:45:00",
+        "arrival": "06/05/2022, 22:15:00",
+        "duration": "3 hr 30 min",
+        "price": "\u20ac215"
+    },
+    {
+        "origin": "Zagreb",
+        "destination": "Budapest",
+        "departure": "06/05/2022, 12:05:00",
+        "arrival": "06/05/2022, 16:55:00",
+        "duration": "4 hr 50 min",
+        "price": "\u20ac277"
+    },
+    {
+        "origin": "Zagreb",
+        "destination": "Budapest",
+        "departure": "07/05/2022, 14:35:00",
+        "arrival": "08/05/2022, 08:45:00",
+        "duration": "18 hr 10 min",
+        "price": "\u20ac125"
+    },
+    {
+        "origin": "Zagreb",
+        "destination": "Budapest",
+        "departure": "07/05/2022, 19:55:00",
+        "arrival": "08/05/2022, 11:10:00",
+        "duration": "15 hr 15 min",
+        "price": "\u20ac162"
+    },
+    {
+        "origin": "Zagreb",
+        "destination": "Budapest",
+        "departure": "07/05/2022, 11:45:00",
+        "arrival": "07/05/2022, 22:15:00",
+        "duration": "10 hr 30 min",
+        "price": "\u20ac215"
+    },
+    {
+        "origin": "Zagreb",
+        "destination": "Budapest",
+        "departure": "07/05/2022, 08:55:00",
+        "arrival": "07/05/2022, 19:35:00",
+        "duration": "10 hr 40 min",
+        "price": "\u20ac228"
+    },
+    {
+        "origin": "Zagreb",
+        "destination": "Budapest",
+        "departure": "07/05/2022, 13:35:00",
+        "arrival": "07/05/2022, 16:50:00",
+        "duration": "3 hr 15 min",
+        "price": "\u20ac312"
+    },
+    {
+        "origin": "Zagreb",
+        "destination": "Budapest",
+        "departure": "08/05/2022, 14:25:00",
+        "arrival": "08/05/2022, 21:20:00",
+        "duration": "6 hr 55 min",
+        "price": "\u20ac146"
+    },
+    {
+        "origin": "Zagreb",
+        "destination": "Budapest",
+        "departure": "08/05/2022, 11:45:00",
+        "arrival": "08/05/2022, 16:10:00",
+        "duration": "4 hr 25 min",
+        "price": "\u20ac183"
+    },
+    {
+        "origin": "Zagreb",
+        "destination": "Budapest",
+        "departure": "08/05/2022, 18:45:00",
+        "arrival": "08/05/2022, 22:15:00",
+        "duration": "3 hr 30 min",
+        "price": "\u20ac183"
+    },
+    {
+        "origin": "Zagreb",
+        "destination": "Budapest",
+        "departure": "09/05/2022, 12:30:00",
+        "arrival": "09/05/2022, 20:50:00",
+        "duration": "8 hr 20 min",
+        "price": "\u20ac145"
+    },
+    {
+        "origin": "Zagreb",
+        "destination": "Budapest",
+        "departure": "09/05/2022, 11:45:00",
+        "arrival": "09/05/2022, 14:20:00",
+        "duration": "2 hr 35 min",
+        "price": "\u20ac183"
+    },
+    {
+        "origin": "Zagreb",
+        "destination": "Budapest",
+        "departure": "09/05/2022, 14:55:00",
+        "arrival": "09/05/2022, 23:45:00",
+        "duration": "8 hr 50 min",
+        "price": "\u20ac216"
+    },
+    {
+        "origin": "Zagreb",
         "destination": "Wien",
         "departure": "05/05/2022, 11:45:00",
         "arrival": "05/05/2022, 12:40:00",
