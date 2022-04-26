@@ -67,12 +67,15 @@ def get_flight_info(origin, destination, date):
     arrival_times = best_flights.find_elements(By.XPATH, './/span[starts-with(@aria-label, "Arrival time")]')
     durations = best_flights.find_elements(By.XPATH, './/div[starts-with(@aria-label, "Total duration")]')
     prices = best_flights.find_elements(By.XPATH, './/span[contains(@aria-label, "euros")]')
+    stops = best_flights.find_elements(By.XPATH, './/span[starts-with(@aria-label, "Nonstop flight.")]|.//span[contains(@aria-label, "stop flight.")]|.//span[contains(@aria-label, "stops flight.")]')
 
     flights = []
     for i in range(len(durations)):
         departure = datetime.strptime('2022 ' + date + ' ' + departure_times[(i+1)*2-2].text, "%Y %d/%m %I:%M %p")
         if '+1' in arrival_times[(i+1)*2-2].text: # If it has +1 it means arrival is on the next day
             arrival = datetime.strptime('2022 ' + date + ' ' + arrival_times[(i+1)*2-2].text[:-2], "%Y %d/%m %I:%M %p") + timedelta(days=1)
+        elif '+' in arrival_times[(i+1)*2-2].text:
+            continue
         else:
             arrival = datetime.strptime('2022 ' + date + ' ' + arrival_times[(i+1)*2-2].text, "%Y %d/%m %I:%M %p")
         
@@ -82,7 +85,8 @@ def get_flight_info(origin, destination, date):
             "departure": departure.strftime('%d/%m/%Y, %H:%M:%S'),
             "arrival": arrival.strftime('%d/%m/%Y, %H:%M:%S'),
             "duration": durations[i].text,
-            "price": prices[(i+1)*3-3].text # Price appears 3 times on page (2 are empty strings)
+            "price": prices[(i+1)*3-3].text, # Price appears 3 times on page (2 are empty strings)
+            "stops": 0 if stops[i].text == "Nonstop" else int(stops[i].text[0])
         })
     
     return flights
