@@ -1,3 +1,4 @@
+import traceback
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -18,8 +19,8 @@ def try_x_times(x, time_between_tries, function, *args):
     while(i < x):
         try :
             return function(*args)
-        except Exception as e:
-            print(e)
+        except Exception:
+            print(traceback.format_exc())
         i += 1
         time.sleep(time_between_tries)
 
@@ -61,6 +62,21 @@ def input_fields(origin, destination, date):
     time.sleep(2)
 
 
+def parse_duration(string):
+    # Parses duration and handles this cases:
+    # X Hrs Y Mins
+    # X Hrs
+    # Y Mins
+    duration = 0
+    minutes_index = 0
+    if (string.find(" hr") != -1):
+        hrs_index = string.index(" hr")
+        minutes_index = hrs_index + len(" hr ")
+        duration += int(string[:hrs_index]) * 60
+    if (string.find(" min") != -1):
+        duration += int(string[minutes_index:string.index(" min")])
+    return duration
+
 def get_flight_info(origin, destination, date):
     best_flights = driver.find_element(By.XPATH, '//h3[contains(text(), "Best flights")]/../../../..')
     departure_times = best_flights.find_elements(By.XPATH, './/span[starts-with(@aria-label, "Departure time")]')
@@ -79,13 +95,15 @@ def get_flight_info(origin, destination, date):
         else:
             arrival = datetime.strptime('2022 ' + date + ' ' + arrival_times[(i+1)*2-2].text, "%Y %d/%m %I:%M %p")
         
+        
+
         flights.append({
             "origin": origin,
             "destination": destination,
-            "departure": departure.strftime('%d/%m/%Y, %H:%M:%S'),
-            "arrival": arrival.strftime('%d/%m/%Y, %H:%M:%S'),
-            "duration": durations[i].text,
-            "price": prices[(i+1)*3-3].text, # Price appears 3 times on page (2 are empty strings)
+            "departure": departure.strftime('%d/%m/%Y, %H:%M:%S %z'),
+            "arrival": arrival.strftime('%d/%m/%Y, %H:%M:%S %z'),
+            "duration": parse_duration(durations[i].text),
+            "price": prices[(i+1)*3-3].text[1:], # Price appears 3 times on page (2 are empty strings)
             "stops": 0 if stops[i].text == "Nonstop" else int(stops[i].text[0])
         })
     
