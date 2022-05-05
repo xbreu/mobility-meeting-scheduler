@@ -94,8 +94,8 @@ def get_flight_info(origin, destination, date):
             continue
         else:
             arrival = datetime.strptime('2022 ' + date + ' ' + arrival_times[(i+1)*2-2].text, "%Y %d/%m %I:%M %p")
-        
-        
+
+
 
         flights.append({
             "origin": origin,
@@ -106,10 +106,10 @@ def get_flight_info(origin, destination, date):
             "price": prices[(i+1)*3-3].text[1:], # Price appears 3 times on page (2 are empty strings)
             "stops": 0 if stops[i].text == "Nonstop" else int(stops[i].text[0])
         })
-    
+
     return flights
 
-    
+
 
 def find_flights(origin, destination):
     driver.get("https://www.google.com/travel/flights")
