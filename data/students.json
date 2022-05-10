@@ -1,7 +1,7 @@
 {
     "students": [
         {
-            "city": "Budapest",
+            "city": "budapest",
             "availability": ["05/05/2022", "06/05/2022", "07/05/2022", "08/05/2022", "09/05/2022", "10/05/2022", "11/05/2022"],
             "maxConnections": 1,
             "maxDuration": 600,
@@ -9,7 +9,7 @@
             "latestArrival": "23:30:00"
         },
         {
-            "city": "Zagreb",
+            "city": "zagreb",
             "availability": ["05/05/2022", "06/05/2022", "07/05/2022", "08/05/2022", "09/05/2022", "10/05/2022", "11/05/2022"],
             "maxConnections": 1,
             "maxDuration": 600,
@@ -17,7 +17,7 @@
             "latestArrival": "23:30:00"
         },
         {
-            "city": "Wien",
+            "city": "wien",
             "availability": ["05/05/2022", "06/05/2022", "07/05/2022", "08/05/2022", "09/05/2022", "10/05/2022", "11/05/2022"],
             "maxConnections": 1,
             "maxDuration": 600,
@@ -27,8 +27,8 @@
     ],
     "minimumTime": 1440,
     "destinations": [
-        "Budapest",
-        "Zagreb",
-        "Wien"
+        "budapest",
+        "zagreb",
+        "wien"
     ]
 }

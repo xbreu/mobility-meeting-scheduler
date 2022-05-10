@@ -98,8 +98,8 @@ def get_flight_info(origin, destination, date):
 
 
         flights.append({
-            "origin": origin,
-            "destination": destination,
+            "origin": origin.lower(),
+            "destination": destination.lower(),
             "departure": departure.strftime('%d/%m/%Y, %H:%M:%S %z'),
             "arrival": arrival.strftime('%d/%m/%Y, %H:%M:%S %z'),
             "duration": parse_duration(durations[i].text),
