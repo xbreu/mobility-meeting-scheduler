@@ -1,7 +1,7 @@
 [
     {
-        "origin": "Budapest",
-        "destination": "Zagreb",
+        "origin": "budapest",
+        "destination": "zagreb",
         "departure": "05/05/2022, 08:40:00 ",
         "arrival": "05/05/2022, 16:55:00 ",
         "duration": 495,
@@ -9,8 +9,8 @@
         "stops": 1
     },
     {
-        "origin": "Budapest",
-        "destination": "Zagreb",
+        "origin": "budapest",
+        "destination": "zagreb",
         "departure": "05/05/2022, 07:00:00 ",
         "arrival": "05/05/2022, 11:00:00 ",
         "duration": 240,
@@ -18,8 +18,8 @@
         "stops": 1
     },
     {
-        "origin": "Budapest",
-        "destination": "Zagreb",
+        "origin": "budapest",
+        "destination": "zagreb",
         "departure": "05/05/2022, 15:00:00 ",
         "arrival": "05/05/2022, 18:05:00 ",
         "duration": 185,
@@ -27,8 +27,8 @@
         "stops": 1
     },
     {
-        "origin": "Budapest",
-        "destination": "Zagreb",
+        "origin": "budapest",
+        "destination": "zagreb",
         "departure": "05/05/2022, 18:55:00 ",
         "arrival": "05/05/2022, 22:55:00 ",
         "duration": 240,
@@ -36,8 +36,8 @@
         "stops": 1
     },
     {
-        "origin": "Budapest",
-        "destination": "Zagreb",
+        "origin": "budapest",
+        "destination": "zagreb",
         "departure": "05/05/2022, 12:50:00 ",
         "arrival": "05/05/2022, 17:20:00 ",
         "duration": 270,
@@ -45,8 +45,8 @@
         "stops": 1
     },
     {
-        "origin": "Budapest",
-        "destination": "Zagreb",
+        "origin": "budapest",
+        "destination": "zagreb",
         "departure": "06/05/2022, 07:00:00 ",
         "arrival": "06/05/2022, 11:00:00 ",
         "duration": 240,
@@ -54,8 +54,8 @@
         "stops": 1
     },
     {
-        "origin": "Budapest",
-        "destination": "Zagreb",
+        "origin": "budapest",
+        "destination": "zagreb",
         "departure": "06/05/2022, 18:55:00 ",
         "arrival": "06/05/2022, 22:55:00 ",
         "duration": 240,
@@ -63,8 +63,8 @@
         "stops": 1
     },
     {
-        "origin": "Budapest",
-        "destination": "Zagreb",
+        "origin": "budapest",
+        "destination": "zagreb",
         "departure": "06/05/2022, 12:50:00 ",
         "arrival": "06/05/2022, 17:20:00 ",
         "duration": 270,
@@ -72,8 +72,8 @@
         "stops": 1
     },
     {
-        "origin": "Budapest",
-        "destination": "Zagreb",
+        "origin": "budapest",
+        "destination": "zagreb",
         "departure": "07/05/2022, 07:00:00 ",
         "arrival": "07/05/2022, 11:00:00 ",
         "duration": 240,
@@ -81,8 +81,8 @@
         "stops": 1
     },
     {
-        "origin": "Budapest",
-        "destination": "Zagreb",
+        "origin": "budapest",
+        "destination": "zagreb",
         "departure": "07/05/2022, 06:30:00 ",
         "arrival": "07/05/2022, 13:55:00 ",
         "duration": 445,
@@ -90,8 +90,8 @@
         "stops": 1
     },
     {
-        "origin": "Budapest",
-        "destination": "Zagreb",
+        "origin": "budapest",
+        "destination": "zagreb",
         "departure": "07/05/2022, 12:50:00 ",
         "arrival": "07/05/2022, 17:20:00 ",
         "duration": 270,
@@ -99,8 +99,8 @@
         "stops": 1
     },
     {
-        "origin": "Budapest",
-        "destination": "Zagreb",
+        "origin": "budapest",
+        "destination": "zagreb",
         "departure": "08/05/2022, 12:50:00 ",
         "arrival": "08/05/2022, 17:20:00 ",
         "duration": 270,
@@ -108,8 +108,8 @@
         "stops": 1
     },
     {
-        "origin": "Budapest",
-        "destination": "Zagreb",
+        "origin": "budapest",
+        "destination": "zagreb",
         "departure": "08/05/2022, 06:20:00 ",
         "arrival": "08/05/2022, 13:45:00 ",
         "duration": 445,
@@ -117,8 +117,8 @@
         "stops": 1
     },
     {
-        "origin": "Budapest",
-        "destination": "Zagreb",
+        "origin": "budapest",
+        "destination": "zagreb",
         "departure": "08/05/2022, 07:00:00 ",
         "arrival": "08/05/2022, 11:00:00 ",
         "duration": 240,
@@ -126,8 +126,8 @@
         "stops": 1
     },
     {
-        "origin": "Budapest",
-        "destination": "Zagreb",
+        "origin": "budapest",
+        "destination": "zagreb",
         "departure": "09/05/2022, 07:00:00 ",
         "arrival": "09/05/2022, 11:00:00 ",
         "duration": 240,
@@ -135,8 +135,8 @@
         "stops": 1
     },
     {
-        "origin": "Budapest",
-        "destination": "Zagreb",
+        "origin": "budapest",
+        "destination": "zagreb",
         "departure": "09/05/2022, 20:20:00 ",
         "arrival": "10/05/2022, 09:05:00 ",
         "duration": 765,
@@ -144,8 +144,8 @@
         "stops": 1
     },
     {
-        "origin": "Budapest",
-        "destination": "Zagreb",
+        "origin": "budapest",
+        "destination": "zagreb",
         "departure": "09/05/2022, 07:00:00 ",
         "arrival": "09/05/2022, 10:55:00 ",
         "duration": 235,
@@ -153,8 +153,8 @@
         "stops": 1
     },
     {
-        "origin": "Zagreb",
-        "destination": "Budapest",
+        "origin": "zagreb",
+        "destination": "budapest",
         "departure": "05/05/2022, 14:15:00 ",
         "arrival": "05/05/2022, 19:40:00 ",
         "duration": 325,
@@ -162,8 +162,8 @@
         "stops": 1
     },
     {
-        "origin": "Zagreb",
-        "destination": "Budapest",
+        "origin": "zagreb",
+        "destination": "budapest",
         "departure": "05/05/2022, 18:45:00 ",
         "arrival": "05/05/2022, 22:15:00 ",
         "duration": 210,
@@ -171,8 +171,8 @@
         "stops": 1
     },
     {
-        "origin": "Zagreb",
-        "destination": "Budapest",
+        "origin": "zagreb",
+        "destination": "budapest",
         "departure": "05/05/2022, 12:05:00 ",
         "arrival": "05/05/2022, 19:45:00 ",
         "duration": 460,
@@ -180,8 +180,8 @@
         "stops": 1
     },
     {
-        "origin": "Zagreb",
-        "destination": "Budapest",
+        "origin": "zagreb",
+        "destination": "budapest",
         "departure": "05/05/2022, 08:30:00 ",
         "arrival": "05/05/2022, 13:20:00 ",
         "duration": 290,
@@ -189,8 +189,8 @@
         "stops": 1
     },
     {
-        "origin": "Zagreb",
-        "destination": "Budapest",
+        "origin": "zagreb",
+        "destination": "budapest",
         "departure": "06/05/2022, 14:10:00 ",
         "arrival": "06/05/2022, 20:50:00 ",
         "duration": 400,
@@ -198,8 +198,8 @@
         "stops": 1
     },
     {
-        "origin": "Zagreb",
-        "destination": "Budapest",
+        "origin": "zagreb",
+        "destination": "budapest",
         "departure": "06/05/2022, 18:45:00 ",
         "arrival": "06/05/2022, 22:15:00 ",
         "duration": 210,
@@ -207,8 +207,8 @@
         "stops": 1
     },
     {
-        "origin": "Zagreb",
-        "destination": "Budapest",
+        "origin": "zagreb",
+        "destination": "budapest",
         "departure": "06/05/2022, 12:05:00 ",
         "arrival": "06/05/2022, 16:55:00 ",
         "duration": 290,
@@ -216,8 +216,8 @@
         "stops": 1
     },
     {
-        "origin": "Zagreb",
-        "destination": "Budapest",
+        "origin": "zagreb",
+        "destination": "budapest",
         "departure": "06/05/2022, 13:35:00 ",
         "arrival": "06/05/2022, 16:50:00 ",
         "duration": 195,
@@ -225,8 +225,8 @@
         "stops": 1
     },
     {
-        "origin": "Zagreb",
-        "destination": "Budapest",
+        "origin": "zagreb",
+        "destination": "budapest",
         "departure": "07/05/2022, 12:05:00 ",
         "arrival": "07/05/2022, 17:55:00 ",
         "duration": 350,
@@ -234,8 +234,8 @@
         "stops": 1
     },
     {
-        "origin": "Zagreb",
-        "destination": "Budapest",
+        "origin": "zagreb",
+        "destination": "budapest",
         "departure": "07/05/2022, 17:30:00 ",
         "arrival": "07/05/2022, 22:55:00 ",
         "duration": 325,
@@ -243,8 +243,8 @@
         "stops": 1
     },
     {
-        "origin": "Zagreb",
-        "destination": "Budapest",
+        "origin": "zagreb",
+        "destination": "budapest",
         "departure": "07/05/2022, 11:45:00 ",
         "arrival": "07/05/2022, 14:20:00 ",
         "duration": 155,
@@ -252,8 +252,8 @@
         "stops": 1
     },
     {
-        "origin": "Zagreb",
-        "destination": "Budapest",
+        "origin": "zagreb",
+        "destination": "budapest",
         "departure": "07/05/2022, 06:55:00 ",
         "arrival": "07/05/2022, 13:50:00 ",
         "duration": 415,
@@ -261,8 +261,8 @@
         "stops": 1
     },
     {
-        "origin": "Zagreb",
-        "destination": "Budapest",
+        "origin": "zagreb",
+        "destination": "budapest",
         "departure": "08/05/2022, 11:45:00 ",
         "arrival": "08/05/2022, 16:10:00 ",
         "duration": 265,
@@ -270,8 +270,8 @@
         "stops": 1
     },
     {
-        "origin": "Zagreb",
-        "destination": "Budapest",
+        "origin": "zagreb",
+        "destination": "budapest",
         "departure": "08/05/2022, 18:45:00 ",
         "arrival": "08/05/2022, 22:15:00 ",
         "duration": 210,
@@ -279,8 +279,8 @@
         "stops": 1
     },
     {
-        "origin": "Zagreb",
-        "destination": "Budapest",
+        "origin": "zagreb",
+        "destination": "budapest",
         "departure": "08/05/2022, 08:15:00 ",
         "arrival": "08/05/2022, 10:45:00 ",
         "duration": 150,
@@ -288,8 +288,8 @@
         "stops": 1
     },
     {
-        "origin": "Zagreb",
-        "destination": "Budapest",
+        "origin": "zagreb",
+        "destination": "budapest",
         "departure": "09/05/2022, 07:50:00 ",
         "arrival": "09/05/2022, 10:45:00 ",
         "duration": 175,
@@ -297,8 +297,8 @@
         "stops": 1
     },
     {
-        "origin": "Zagreb",
-        "destination": "Budapest",
+        "origin": "zagreb",
+        "destination": "budapest",
         "departure": "09/05/2022, 11:45:00 ",
         "arrival": "09/05/2022, 14:20:00 ",
         "duration": 155,
@@ -306,8 +306,8 @@
         "stops": 1
     },
     {
-        "origin": "Zagreb",
-        "destination": "Budapest",
+        "origin": "zagreb",
+        "destination": "budapest",
         "departure": "09/05/2022, 12:25:00 ",
         "arrival": "09/05/2022, 18:55:00 ",
         "duration": 390,
@@ -315,8 +315,8 @@
         "stops": 1
     },
     {
-        "origin": "Zagreb",
-        "destination": "Budapest",
+        "origin": "zagreb",
+        "destination": "budapest",
         "departure": "09/05/2022, 09:45:00 ",
         "arrival": "09/05/2022, 16:55:00 ",
         "duration": 430,
@@ -324,8 +324,8 @@
         "stops": 1
     },
     {
-        "origin": "Zagreb",
-        "destination": "Budapest",
+        "origin": "zagreb",
+        "destination": "budapest",
         "departure": "09/05/2022, 08:15:00 ",
         "arrival": "09/05/2022, 10:45:00 ",
         "duration": 150,
@@ -333,8 +333,8 @@
         "stops": 1
     },
     {
-        "origin": "Budapest",
-        "destination": "Wien",
+        "origin": "budapest",
+        "destination": "wien",
         "departure": "05/05/2022, 15:35:00 ",
         "arrival": "05/05/2022, 22:55:00 ",
         "duration": 440,
@@ -342,8 +342,8 @@
         "stops": 1
     },
     {
-        "origin": "Budapest",
-        "destination": "Wien",
+        "origin": "budapest",
+        "destination": "wien",
         "departure": "05/05/2022, 09:15:00 ",
         "arrival": "05/05/2022, 14:45:00 ",
         "duration": 330,
@@ -351,8 +351,8 @@
         "stops": 1
     },
     {
-        "origin": "Budapest",
-        "destination": "Wien",
+        "origin": "budapest",
+        "destination": "wien",
         "departure": "05/05/2022, 07:00:00 ",
         "arrival": "05/05/2022, 07:45:00 ",
         "duration": 45,
@@ -360,8 +360,8 @@
         "stops": 0
     },
     {
-        "origin": "Budapest",
-        "destination": "Wien",
+        "origin": "budapest",
+        "destination": "wien",
         "departure": "05/05/2022, 11:25:00 ",
         "arrival": "05/05/2022, 12:15:00 ",
         "duration": 50,
@@ -369,8 +369,8 @@
         "stops": 0
     },
     {
-        "origin": "Budapest",
-        "destination": "Wien",
+        "origin": "budapest",
+        "destination": "wien",
         "departure": "05/05/2022, 15:00:00 ",
         "arrival": "05/05/2022, 15:50:00 ",
         "duration": 50,
@@ -378,8 +378,8 @@
         "stops": 0
     },
     {
-        "origin": "Budapest",
-        "destination": "Wien",
+        "origin": "budapest",
+        "destination": "wien",
         "departure": "06/05/2022, 09:15:00 ",
         "arrival": "06/05/2022, 14:45:00 ",
         "duration": 330,
@@ -387,8 +387,8 @@
         "stops": 1
     },
     {
-        "origin": "Budapest",
-        "destination": "Wien",
+        "origin": "budapest",
+        "destination": "wien",
         "departure": "06/05/2022, 07:00:00 ",
         "arrival": "06/05/2022, 07:45:00 ",
         "duration": 45,
@@ -396,8 +396,8 @@
         "stops": 0
     },
     {
-        "origin": "Budapest",
-        "destination": "Wien",
+        "origin": "budapest",
+        "destination": "wien",
         "departure": "06/05/2022, 11:25:00 ",
         "arrival": "06/05/2022, 12:15:00 ",
         "duration": 50,
@@ -405,8 +405,8 @@
         "stops": 0
     },
     {
-        "origin": "Budapest",
-        "destination": "Wien",
+        "origin": "budapest",
+        "destination": "wien",
         "departure": "07/05/2022, 07:00:00 ",
         "arrival": "07/05/2022, 07:45:00 ",
         "duration": 45,
@@ -414,8 +414,8 @@
         "stops": 0
     },
     {
-        "origin": "Budapest",
-        "destination": "Wien",
+        "origin": "budapest",
+        "destination": "wien",
         "departure": "07/05/2022, 11:25:00 ",
         "arrival": "07/05/2022, 12:15:00 ",
         "duration": 50,
@@ -423,8 +423,8 @@
         "stops": 0
     },
     {
-        "origin": "Budapest",
-        "destination": "Wien",
+        "origin": "budapest",
+        "destination": "wien",
         "departure": "07/05/2022, 15:00:00 ",
         "arrival": "07/05/2022, 15:50:00 ",
         "duration": 50,
@@ -432,8 +432,8 @@
         "stops": 0
     },
     {
-        "origin": "Budapest",
-        "destination": "Wien",
+        "origin": "budapest",
+        "destination": "wien",
         "departure": "08/05/2022, 07:00:00 ",
         "arrival": "08/05/2022, 07:45:00 ",
         "duration": 45,
@@ -441,8 +441,8 @@
         "stops": 0
     },
     {
-        "origin": "Budapest",
-        "destination": "Wien",
+        "origin": "budapest",
+        "destination": "wien",
         "departure": "08/05/2022, 11:25:00 ",
         "arrival": "08/05/2022, 12:15:00 ",
         "duration": 50,
@@ -450,8 +450,8 @@
         "stops": 0
     },
     {
-        "origin": "Budapest",
-        "destination": "Wien",
+        "origin": "budapest",
+        "destination": "wien",
         "departure": "08/05/2022, 15:00:00 ",
         "arrival": "08/05/2022, 15:50:00 ",
         "duration": 50,
@@ -459,8 +459,8 @@
         "stops": 0
     },
     {
-        "origin": "Budapest",
-        "destination": "Wien",
+        "origin": "budapest",
+        "destination": "wien",
         "departure": "09/05/2022, 09:15:00 ",
         "arrival": "09/05/2022, 14:45:00 ",
         "duration": 330,
@@ -468,8 +468,8 @@
         "stops": 1
     },
     {
-        "origin": "Budapest",
-        "destination": "Wien",
+        "origin": "budapest",
+        "destination": "wien",
         "departure": "09/05/2022, 15:35:00 ",
         "arrival": "09/05/2022, 22:55:00 ",
         "duration": 440,
@@ -477,8 +477,8 @@
         "stops": 1
     },
     {
-        "origin": "Budapest",
-        "destination": "Wien",
+        "origin": "budapest",
+        "destination": "wien",
         "departure": "09/05/2022, 07:00:00 ",
         "arrival": "09/05/2022, 07:45:00 ",
         "duration": 45,
@@ -486,8 +486,8 @@
         "stops": 0
     },
     {
-        "origin": "Budapest",
-        "destination": "Wien",
+        "origin": "budapest",
+        "destination": "wien",
         "departure": "09/05/2022, 11:25:00 ",
         "arrival": "09/05/2022, 12:15:00 ",
         "duration": 50,
@@ -495,8 +495,8 @@
         "stops": 0
     },
     {
-        "origin": "Budapest",
-        "destination": "Wien",
+        "origin": "budapest",
+        "destination": "wien",
         "departure": "09/05/2022, 15:00:00 ",
         "arrival": "09/05/2022, 15:50:00 ",
         "duration": 50,
@@ -504,8 +504,8 @@
         "stops": 0
     },
     {
-        "origin": "Wien",
-        "destination": "Budapest",
+        "origin": "wien",
+        "destination": "budapest",
         "departure": "05/05/2022, 15:25:00 ",
         "arrival": "05/05/2022, 19:40:00 ",
         "duration": 255,
@@ -513,8 +513,8 @@
         "stops": 1
     },
     {
-        "origin": "Wien",
-        "destination": "Budapest",
+        "origin": "wien",
+        "destination": "budapest",
         "departure": "05/05/2022, 21:30:00 ",
         "arrival": "05/05/2022, 22:15:00 ",
         "duration": 45,
@@ -522,8 +522,8 @@
         "stops": 0
     },
     {
-        "origin": "Wien",
-        "destination": "Budapest",
+        "origin": "wien",
+        "destination": "budapest",
         "departure": "05/05/2022, 10:00:00 ",
         "arrival": "05/05/2022, 10:45:00 ",
         "duration": 45,
@@ -531,8 +531,8 @@
         "stops": 0
     },
     {
-        "origin": "Wien",
-        "destination": "Budapest",
+        "origin": "wien",
+        "destination": "budapest",
         "departure": "06/05/2022, 16:00:00 ",
         "arrival": "06/05/2022, 20:50:00 ",
         "duration": 290,
@@ -540,8 +540,8 @@
         "stops": 1
     },
     {
-        "origin": "Wien",
-        "destination": "Budapest",
+        "origin": "wien",
+        "destination": "budapest",
         "departure": "06/05/2022, 21:30:00 ",
         "arrival": "06/05/2022, 22:15:00 ",
         "duration": 45,
@@ -549,8 +549,8 @@
         "stops": 0
     },
     {
-        "origin": "Wien",
-        "destination": "Budapest",
+        "origin": "wien",
+        "destination": "budapest",
         "departure": "06/05/2022, 14:50:00 ",
         "arrival": "06/05/2022, 19:00:00 ",
         "duration": 250,
@@ -558,8 +558,8 @@
         "stops": 1
     },
     {
-        "origin": "Wien",
-        "destination": "Budapest",
+        "origin": "wien",
+        "destination": "budapest",
         "departure": "06/05/2022, 13:15:00 ",
         "arrival": "06/05/2022, 16:50:00 ",
         "duration": 215,
@@ -567,8 +567,8 @@
         "stops": 1
     },
     {
-        "origin": "Wien",
-        "destination": "Budapest",
+        "origin": "wien",
+        "destination": "budapest",
         "departure": "06/05/2022, 10:00:00 ",
         "arrival": "06/05/2022, 10:45:00 ",
         "duration": 45,
@@ -576,8 +576,8 @@
         "stops": 0
     },
     {
-        "origin": "Wien",
-        "destination": "Budapest",
+        "origin": "wien",
+        "destination": "budapest",
         "departure": "07/05/2022, 07:00:00 ",
         "arrival": "07/05/2022, 14:55:00 ",
         "duration": 475,
@@ -585,8 +585,8 @@
         "stops": 1
     },
     {
-        "origin": "Wien",
-        "destination": "Budapest",
+        "origin": "wien",
+        "destination": "budapest",
         "departure": "07/05/2022, 10:00:00 ",
         "arrival": "07/05/2022, 10:45:00 ",
         "duration": 45,
@@ -594,8 +594,8 @@
         "stops": 0
     },
     {
-        "origin": "Wien",
-        "destination": "Budapest",
+        "origin": "wien",
+        "destination": "budapest",
         "departure": "07/05/2022, 13:35:00 ",
         "arrival": "07/05/2022, 14:20:00 ",
         "duration": 45,
@@ -603,8 +603,8 @@
         "stops": 0
     },
     {
-        "origin": "Wien",
-        "destination": "Budapest",
+        "origin": "wien",
+        "destination": "budapest",
         "departure": "07/05/2022, 21:30:00 ",
         "arrival": "07/05/2022, 22:15:00 ",
         "duration": 45,
@@ -612,8 +612,8 @@
         "stops": 0
     },
     {
-        "origin": "Wien",
-        "destination": "Budapest",
+        "origin": "wien",
+        "destination": "budapest",
         "departure": "07/05/2022, 14:10:00 ",
         "arrival": "07/05/2022, 18:10:00 ",
         "duration": 240,
@@ -621,8 +621,8 @@
         "stops": 1
     },
     {
-        "origin": "Wien",
-        "destination": "Budapest",
+        "origin": "wien",
+        "destination": "budapest",
         "departure": "08/05/2022, 10:00:00 ",
         "arrival": "08/05/2022, 10:45:00 ",
         "duration": 45,
@@ -630,8 +630,8 @@
         "stops": 0
     },
     {
-        "origin": "Wien",
-        "destination": "Budapest",
+        "origin": "wien",
+        "destination": "budapest",
         "departure": "08/05/2022, 15:25:00 ",
         "arrival": "08/05/2022, 16:10:00 ",
         "duration": 45,
@@ -639,8 +639,8 @@
         "stops": 0
     },
     {
-        "origin": "Wien",
-        "destination": "Budapest",
+        "origin": "wien",
+        "destination": "budapest",
         "departure": "08/05/2022, 21:30:00 ",
         "arrival": "08/05/2022, 22:15:00 ",
         "duration": 45,
@@ -648,8 +648,8 @@
         "stops": 0
     },
     {
-        "origin": "Wien",
-        "destination": "Budapest",
+        "origin": "wien",
+        "destination": "budapest",
         "departure": "08/05/2022, 09:40:00 ",
         "arrival": "08/05/2022, 17:50:00 ",
         "duration": 490,
@@ -657,8 +657,8 @@
         "stops": 1
     },
     {
-        "origin": "Wien",
-        "destination": "Budapest",
+        "origin": "wien",
+        "destination": "budapest",
         "departure": "09/05/2022, 21:30:00 ",
         "arrival": "09/05/2022, 22:15:00 ",
         "duration": 45,
@@ -666,8 +666,8 @@
         "stops": 0
     },
     {
-        "origin": "Wien",
-        "destination": "Budapest",
+        "origin": "wien",
+        "destination": "budapest",
         "departure": "09/05/2022, 10:00:00 ",
         "arrival": "09/05/2022, 10:45:00 ",
         "duration": 45,
@@ -675,8 +675,8 @@
         "stops": 0
     },
     {
-        "origin": "Wien",
-        "destination": "Budapest",
+        "origin": "wien",
+        "destination": "budapest",
         "departure": "09/05/2022, 13:35:00 ",
         "arrival": "09/05/2022, 14:20:00 ",
         "duration": 45,
@@ -684,8 +684,8 @@
         "stops": 0
     },
     {
-        "origin": "Zagreb",
-        "destination": "Wien",
+        "origin": "zagreb",
+        "destination": "wien",
         "departure": "05/05/2022, 11:45:00 ",
         "arrival": "05/05/2022, 12:40:00 ",
         "duration": 55,
@@ -693,8 +693,8 @@
         "stops": 0
     },
     {
-        "origin": "Zagreb",
-        "destination": "Wien",
+        "origin": "zagreb",
+        "destination": "wien",
         "departure": "05/05/2022, 18:45:00 ",
         "arrival": "05/05/2022, 19:40:00 ",
         "duration": 55,
@@ -702,8 +702,8 @@
         "stops": 0
     },
     {
-        "origin": "Zagreb",
-        "destination": "Wien",
+        "origin": "zagreb",
+        "destination": "wien",
         "departure": "05/05/2022, 17:55:00 ",
         "arrival": "05/05/2022, 18:45:00 ",
         "duration": 50,
@@ -711,8 +711,8 @@
         "stops": 0
     },
     {
-        "origin": "Zagreb",
-        "destination": "Wien",
+        "origin": "zagreb",
+        "destination": "wien",
         "departure": "06/05/2022, 11:45:00 ",
         "arrival": "06/05/2022, 12:40:00 ",
         "duration": 55,
@@ -720,8 +720,8 @@
         "stops": 0
     },
     {
-        "origin": "Zagreb",
-        "destination": "Wien",
+        "origin": "zagreb",
+        "destination": "wien",
         "departure": "06/05/2022, 18:45:00 ",
         "arrival": "06/05/2022, 19:40:00 ",
         "duration": 55,
@@ -729,8 +729,8 @@
         "stops": 0
     },
     {
-        "origin": "Zagreb",
-        "destination": "Wien",
+        "origin": "zagreb",
+        "destination": "wien",
         "departure": "06/05/2022, 17:55:00 ",
         "arrival": "06/05/2022, 18:45:00 ",
         "duration": 50,
@@ -738,8 +738,8 @@
         "stops": 0
     },
     {
-        "origin": "Zagreb",
-        "destination": "Wien",
+        "origin": "zagreb",
+        "destination": "wien",
         "departure": "07/05/2022, 08:35:00 ",
         "arrival": "07/05/2022, 20:05:00 ",
         "duration": 690,
@@ -747,8 +747,8 @@
         "stops": 1
     },
     {
-        "origin": "Zagreb",
-        "destination": "Wien",
+        "origin": "zagreb",
+        "destination": "wien",
         "departure": "07/05/2022, 11:45:00 ",
         "arrival": "07/05/2022, 12:40:00 ",
         "duration": 55,
@@ -756,8 +756,8 @@
         "stops": 0
     },
     {
-        "origin": "Zagreb",
-        "destination": "Wien",
+        "origin": "zagreb",
+        "destination": "wien",
         "departure": "07/05/2022, 08:35:00 ",
         "arrival": "07/05/2022, 12:15:00 ",
         "duration": 220,
@@ -765,8 +765,8 @@
         "stops": 1
     },
     {
-        "origin": "Zagreb",
-        "destination": "Wien",
+        "origin": "zagreb",
+        "destination": "wien",
         "departure": "07/05/2022, 06:55:00 ",
         "arrival": "07/05/2022, 11:15:00 ",
         "duration": 260,
@@ -774,8 +774,8 @@
         "stops": 1
     },
     {
-        "origin": "Zagreb",
-        "destination": "Wien",
+        "origin": "zagreb",
+        "destination": "wien",
         "departure": "07/05/2022, 12:05:00 ",
         "arrival": "07/05/2022, 18:45:00 ",
         "duration": 400,
@@ -783,8 +783,8 @@
         "stops": 1
     },
     {
-        "origin": "Zagreb",
-        "destination": "Wien",
+        "origin": "zagreb",
+        "destination": "wien",
         "departure": "08/05/2022, 11:45:00 ",
         "arrival": "08/05/2022, 12:40:00 ",
         "duration": 55,
@@ -792,8 +792,8 @@
         "stops": 0
     },
     {
-        "origin": "Zagreb",
-        "destination": "Wien",
+        "origin": "zagreb",
+        "destination": "wien",
         "departure": "08/05/2022, 18:45:00 ",
         "arrival": "08/05/2022, 19:40:00 ",
         "duration": 55,
@@ -801,8 +801,8 @@
         "stops": 0
     },
     {
-        "origin": "Zagreb",
-        "destination": "Wien",
+        "origin": "zagreb",
+        "destination": "wien",
         "departure": "08/05/2022, 08:15:00 ",
         "arrival": "08/05/2022, 09:05:00 ",
         "duration": 50,
@@ -810,8 +810,8 @@
         "stops": 0
     },
     {
-        "origin": "Zagreb",
-        "destination": "Wien",
+        "origin": "zagreb",
+        "destination": "wien",
         "departure": "09/05/2022, 08:30:00 ",
         "arrival": "09/05/2022, 20:05:00 ",
         "duration": 695,
@@ -819,8 +819,8 @@
         "stops": 1
     },
     {
-        "origin": "Zagreb",
-        "destination": "Wien",
+        "origin": "zagreb",
+        "destination": "wien",
         "departure": "09/05/2022, 13:50:00 ",
         "arrival": "09/05/2022, 19:35:00 ",
         "duration": 345,
@@ -828,8 +828,8 @@
         "stops": 1
     },
     {
-        "origin": "Zagreb",
-        "destination": "Wien",
+        "origin": "zagreb",
+        "destination": "wien",
         "departure": "09/05/2022, 11:45:00 ",
         "arrival": "09/05/2022, 12:40:00 ",
         "duration": 55,
@@ -837,8 +837,8 @@
         "stops": 0
     },
     {
-        "origin": "Zagreb",
-        "destination": "Wien",
+        "origin": "zagreb",
+        "destination": "wien",
         "departure": "09/05/2022, 07:50:00 ",
         "arrival": "09/05/2022, 08:45:00 ",
         "duration": 55,
@@ -846,8 +846,8 @@
         "stops": 0
     },
     {
-        "origin": "Zagreb",
-        "destination": "Wien",
+        "origin": "zagreb",
+        "destination": "wien",
         "departure": "09/05/2022, 17:55:00 ",
         "arrival": "09/05/2022, 18:45:00 ",
         "duration": 50,
@@ -855,8 +855,8 @@
         "stops": 0
     },
     {
-        "origin": "Wien",
-        "destination": "Zagreb",
+        "origin": "wien",
+        "destination": "zagreb",
         "departure": "05/05/2022, 17:15:00 ",
         "arrival": "05/05/2022, 18:05:00 ",
         "duration": 50,
@@ -864,8 +864,8 @@
         "stops": 0
     },
     {
-        "origin": "Wien",
-        "destination": "Zagreb",
+        "origin": "wien",
+        "destination": "zagreb",
         "departure": "05/05/2022, 10:10:00 ",
         "arrival": "05/05/2022, 11:00:00 ",
         "duration": 50,
@@ -873,8 +873,8 @@
         "stops": 0
     },
     {
-        "origin": "Wien",
-        "destination": "Zagreb",
+        "origin": "wien",
+        "destination": "zagreb",
         "departure": "05/05/2022, 19:45:00 ",
         "arrival": "05/05/2022, 20:30:00 ",
         "duration": 45,
@@ -882,8 +882,8 @@
         "stops": 0
     },
     {
-        "origin": "Wien",
-        "destination": "Zagreb",
+        "origin": "wien",
+        "destination": "zagreb",
         "departure": "06/05/2022, 17:15:00 ",
         "arrival": "06/05/2022, 18:05:00 ",
         "duration": 50,
@@ -891,8 +891,8 @@
         "stops": 0
     },
     {
-        "origin": "Wien",
-        "destination": "Zagreb",
+        "origin": "wien",
+        "destination": "zagreb",
         "departure": "06/05/2022, 10:10:00 ",
         "arrival": "06/05/2022, 11:00:00 ",
         "duration": 50,
@@ -900,8 +900,8 @@
         "stops": 0
     },
     {
-        "origin": "Wien",
-        "destination": "Zagreb",
+        "origin": "wien",
+        "destination": "zagreb",
         "departure": "06/05/2022, 19:45:00 ",
         "arrival": "06/05/2022, 20:30:00 ",
         "duration": 45,
@@ -909,8 +909,8 @@
         "stops": 0
     },
     {
-        "origin": "Wien",
-        "destination": "Zagreb",
+        "origin": "wien",
+        "destination": "zagreb",
         "departure": "07/05/2022, 10:10:00 ",
         "arrival": "07/05/2022, 11:00:00 ",
         "duration": 50,
@@ -918,8 +918,8 @@
         "stops": 0
     },
     {
-        "origin": "Wien",
-        "destination": "Zagreb",
+        "origin": "wien",
+        "destination": "zagreb",
         "departure": "07/05/2022, 17:15:00 ",
         "arrival": "07/05/2022, 18:05:00 ",
         "duration": 50,
@@ -927,8 +927,8 @@
         "stops": 0
     },
     {
-        "origin": "Wien",
-        "destination": "Zagreb",
+        "origin": "wien",
+        "destination": "zagreb",
         "departure": "07/05/2022, 10:10:00 ",
         "arrival": "07/05/2022, 10:55:00 ",
         "duration": 45,
@@ -936,8 +936,8 @@
         "stops": 0
     },
     {
-        "origin": "Wien",
-        "destination": "Zagreb",
+        "origin": "wien",
+        "destination": "zagreb",
         "departure": "07/05/2022, 19:45:00 ",
         "arrival": "07/05/2022, 20:30:00 ",
         "duration": 45,
@@ -945,8 +945,8 @@
         "stops": 0
     },
     {
-        "origin": "Wien",
-        "destination": "Zagreb",
+        "origin": "wien",
+        "destination": "zagreb",
         "departure": "08/05/2022, 10:10:00 ",
         "arrival": "08/05/2022, 11:00:00 ",
         "duration": 50,
@@ -954,8 +954,8 @@
         "stops": 0
     },
     {
-        "origin": "Wien",
-        "destination": "Zagreb",
+        "origin": "wien",
+        "destination": "zagreb",
         "departure": "08/05/2022, 06:25:00 ",
         "arrival": "08/05/2022, 10:00:00 ",
         "duration": 215,
@@ -963,8 +963,8 @@
         "stops": 1
     },
     {
-        "origin": "Wien",
-        "destination": "Zagreb",
+        "origin": "wien",
+        "destination": "zagreb",
         "departure": "08/05/2022, 19:10:00 ",
         "arrival": "08/05/2022, 23:10:00 ",
         "duration": 240,
@@ -972,8 +972,8 @@
         "stops": 1
     },
     {
-        "origin": "Wien",
-        "destination": "Zagreb",
+        "origin": "wien",
+        "destination": "zagreb",
         "departure": "09/05/2022, 09:00:00 ",
         "arrival": "09/05/2022, 13:10:00 ",
         "duration": 250,
@@ -981,8 +981,8 @@
         "stops": 1
     },
     {
-        "origin": "Wien",
-        "destination": "Zagreb",
+        "origin": "wien",
+        "destination": "zagreb",
         "departure": "09/05/2022, 06:15:00 ",
         "arrival": "09/05/2022, 07:05:00 ",
         "duration": 50,
@@ -990,8 +990,8 @@
         "stops": 0
     },
     {
-        "origin": "Wien",
-        "destination": "Zagreb",
+        "origin": "wien",
+        "destination": "zagreb",
         "departure": "09/05/2022, 10:10:00 ",
         "arrival": "09/05/2022, 11:00:00 ",
         "duration": 50,
@@ -999,8 +999,8 @@
         "stops": 0
     },
     {
-        "origin": "Wien",
-        "destination": "Zagreb",
+        "origin": "wien",
+        "destination": "zagreb",
         "departure": "09/05/2022, 10:10:00 ",
         "arrival": "09/05/2022, 10:55:00 ",
         "duration": 45,
@@ -1008,8 +1008,8 @@
         "stops": 0
     },
     {
-        "origin": "Wien",
-        "destination": "Zagreb",
+        "origin": "wien",
+        "destination": "zagreb",
         "departure": "09/05/2022, 19:45:00 ",
         "arrival": "09/05/2022, 20:30:00 ",
         "duration": 45,
