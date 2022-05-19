@@ -38,3 +38,21 @@ data_trips(data(T, _, _, _), T).
 data_destinations(data(_, D, _, _), D).
 data_students(data(_, _, S, _), S).
 data_minimum_useful_time(data(_, _, _, M), M).
+
+% -----------------------------------------------------------------------------
+% Plan structure
+% -----------------------------------------------------------------------------
+
+% [OutgoingTripIndex, IncomingTripIndex]
+
+plan_outgoing_trip_index([O, _], O).
+plan_incoming_trip_index([_, I], I).
+
+create_plans(N, Plans) :-
+    length(Plans, N),
+    restrict_lengths(Plans, 2).
+
+restrict_lengths([], _).
+restrict_lengths([H | T], N) :-
+    length(H, N),
+    restrict_lengths(T, N).
