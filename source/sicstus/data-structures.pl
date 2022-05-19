@@ -4,6 +4,8 @@
 % Trip structure
 % -----------------------------------------------------------------------------
 
+% trip(Origin, Destination, Departure, Arrival, Duration, Price, Stops)
+
 trip_origin(trip(O, _, _, _, _, _, _), O).
 trip_destination(trip(_, D, _, _, _, _, _), D).
 trip_departure(trip(_, _, D, _, _, _, _), D).
@@ -16,6 +18,9 @@ trip_stops(trip(_, _, _, _, _, _, S), S).
 % Student structure
 % -----------------------------------------------------------------------------
 
+% student(City, Availability, MaxConnections, MaxDuration,
+%         EarliestDeparture, LatestArrival)
+
 student_city(student(C, _, _, _, _, _), C).
 student_availability(student(_, A, _, _, _, _), A).
 student_max_connections(student(_, _, M, _, _, _), M).
@@ -26,6 +31,8 @@ student_latest_arrival(student(_, _, _, _, _, L), L).
 % -----------------------------------------------------------------------------
 % Data structure
 % -----------------------------------------------------------------------------
+
+% data(Trips, Destinations, Students, MinimumUsefulTime)
 
 data_trips(data(T, _, _, _), T).
 data_destinations(data(_, D, _, _), D).
