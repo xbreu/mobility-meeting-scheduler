@@ -20,7 +20,7 @@ def try_x_times(x, time_between_tries, function, *args):
         try :
             return function(*args)
         except Exception:
-            print(traceback.format_exc())
+            print(f"Error, try number {i}")
         i += 1
         time.sleep(time_between_tries)
 
@@ -47,11 +47,11 @@ def input_fields(origin, destination, date):
     driver.find_element(By.XPATH, '//button[contains(@aria-label, "Change ticket type")]').click()
     driver.find_element(By.XPATH, '//li[contains(text(), "One way")]').click()
     # Dates
-    driver.find_element(By.CSS_SELECTOR, 'input[aria-label="Departure"][aria-describedby="i25"]').click()
+    driver.find_element(By.CSS_SELECTOR, 'input[aria-label="Departure"][aria-describedby="i26"]').click()
 
     time.sleep(0.5)
     # Departure Date
-    input_box = driver.find_element(By.CSS_SELECTOR, 'input[aria-label="Departure"][aria-describedby="i25"]')
+    input_box = driver.find_element(By.CSS_SELECTOR, 'input[aria-label="Departure"][aria-describedby="i26"]')
     input_box.send_keys(Keys.CONTROL + "a")
     input_box.send_keys(Keys.DELETE)
     input_box.send_keys(date)
@@ -98,8 +98,8 @@ def get_flight_info(origin, destination, date):
 
 
         flights.append({
-            "origin": origin,
-            "destination": destination,
+            "origin": origin.lower(),
+            "destination": destination.lower(),
             "departure": departure.strftime('%d/%m/%Y, %H:%M:%S %z'),
             "arrival": arrival.strftime('%d/%m/%Y, %H:%M:%S %z'),
             "duration": parse_duration(durations[i].text),
@@ -127,14 +127,12 @@ def find_flights(origin, destination):
 
     return flights
 
-def write_origin_flights(flights, origin):
-    origin_flights = [x for x in flights if x["origin"] == origin]
-    other_flights = [x for x in flights if x["origin"] != origin]
-    print(origin_flights)
-    flights_json = json.dumps(origin_flights, indent = 4)[1:-2]
+def write_flights(flights):
+    print(flights)
+    flights_json = json.dumps(flights, indent = 4)[1:-2]
     if ORIGINS: flights_json = flights_json + ","
     FILE.write(flights_json)
-    return other_flights
+    
 
 
 FILE = open('../data/flights.json', 'w', encoding='utf-8')
@@ -148,16 +146,17 @@ driver.get("https://www.google.com/")
 time.sleep(1)
 driver.find_element(By.ID, 'L2AGLb').click()
 
-flights = []
 
 for origin in ORIGINS:
+    flights = []
     for destination in DESTINATIONS:
+        print(origin, destination)
         if origin == destination: continue
         flights += find_flights(origin, destination) # Search departure
         flights += find_flights(destination, origin) # Search return
 
     DESTINATIONS.remove(origin)
-    flights = write_origin_flights(flights, origin)
+    write_flights(flights)
 
 driver.quit()
 
