@@ -1,7 +1,9 @@
 :- consult('./data-structures.pl').
+:- consult('./restrictions.pl').
 
 main :-
     read_data(Data),
+    print(Data),
     data_students(Data, Students),
     length(Students, N),
     create_plans(N, Plans),

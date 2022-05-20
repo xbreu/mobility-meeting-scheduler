@@ -96,20 +96,27 @@ list_of_atoms_to_list_of_dates([A | As], [D | Ds]) :-
 object_attribute_value(json(J), K, V) :-
     member(K=V, J).
 
-json_to_list_of_trips([], []).
-json_to_list_of_trips([J | Js], [T | Ts]) :-
-    json_to_trip(J, T),
-    json_to_list_of_trips(Js, Ts).
+json_to_list_of_trips(_, [], []).
+json_to_list_of_trips(Ls, [J | Js], [T | Ts]) :-
+    json_to_trip(Ls, J, T),
+    json_to_list_of_trips(Ls, Js, Ts).
 
-json_to_list_of_students([], []).
-json_to_list_of_students([J | Js], [S | Ss]) :-
-    json_to_student(J, S),
-    json_to_list_of_students(Js, Ss).
+json_to_list_of_students(_, [], []).
+json_to_list_of_students(Ls, [J | Js], [S | Ss]) :-
+    json_to_student(Ls, J, S),
+    json_to_list_of_students(Ls, Js, Ss).
 
-json_to_trip(J,
+json_to_list_of_destinations(_, [], []).
+json_to_list_of_destinations(Ls, [J | Js], [D | Ds]) :-
+    json_to_destination(Ls, J, D),
+    json_to_list_of_destinations(Ls, Js, Ds).
+
+json_to_trip(Locations, J,
     trip(Origin, Destination, Departure, Arrival, Duration, Price, Stops)) :-
-    object_attribute_value(J, origin, Origin),
-    object_attribute_value(J, destination, Destination),
+    object_attribute_value(J, origin, OriginValue),
+    nth1(Origin, Locations, OriginValue),
+    object_attribute_value(J, destination, DestinationValue),
+    nth1(Destination, Locations, DestinationValue),
     object_attribute_value(J, departure, DepartureAtom),
     object_attribute_value(J, arrival, ArrivalAtom),
     object_attribute_value(J, duration, Duration),
@@ -121,9 +128,10 @@ json_to_trip(J,
     atom_to_datetime(ArrivalAtom, Arrival),
     atom_to_number(PriceAtom, Price).
 
-json_to_student(J, student(City, Availability, MaxConnections, MaxDuration,
-    EarliestDeparture, LatestArrival)) :-
-    object_attribute_value(J, city, City),
+json_to_student(Locations, J, student(City, Availability, MaxConnections,
+    MaxDuration, EarliestDeparture, LatestArrival)) :-
+    object_attribute_value(J, city, CityValue),
+    nth1(City, Locations, CityValue),
     object_attribute_value(J, availability, AvailabilityAtoms),
     object_attribute_value(J, maxConnections, MaxConnections),
     object_attribute_value(J, maxDuration, MaxDuration),
@@ -135,15 +143,24 @@ json_to_student(J, student(City, Availability, MaxConnections, MaxDuration,
     atom_to_time(EarliestDepartureAtom, EarliestDeparture),
     atom_to_time(LatestArrivalAtom, LatestArrival).
 
+json_to_destination(Locations, Name, Destination) :-
+    nth1(Destination, Locations, Name).
+
 % -----------------------------------------------------------------------------
 % Program input
 % -----------------------------------------------------------------------------
 
-read_data(data(Trips, Destinations, Students, MinimumUsefulTime)) :-
+read_data(data(Trips, Destinations, Students, MinimumUsefulTime, Locations)) :-
     read_flights_json(Jf),
+    setof(Location, Trip^Attribute^(
+        member(Trip, Jf),
+        member(Attribute, [origin, destination]),
+        object_attribute_value(Trip, Attribute, Location)
+    ), Locations),
     read_students_json(Js),
     object_attribute_value(Js, students, Ss),
     object_attribute_value(Js, minimumTime, MinimumUsefulTime),
-    object_attribute_value(Js, destinations, Destinations),
-    json_to_list_of_trips(Jf, Trips),
-    json_to_list_of_students(Ss, Students).
+    object_attribute_value(Js, destinations, Ds),
+    json_to_list_of_destinations(Locations, Ds, Destinations),
+    json_to_list_of_trips(Locations, Jf, Trips),
+    json_to_list_of_students(Locations, Ss, Students).
