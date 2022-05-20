@@ -67,12 +67,13 @@ student_latest_arrival(student(_, _, _, _, _, L), L).
 % Data structure
 % -----------------------------------------------------------------------------
 
-% data(Trips, Destinations, Students, MinimumUsefulTime)
+% data(Trips, Destinations, Students, MinimumUsefulTime, Locations)
 
-data_trips(data(T, _, _, _), T).
-data_destinations(data(_, D, _, _), D).
-data_students(data(_, _, S, _), S).
-data_minimum_useful_time(data(_, _, _, M), M).
+data_trips(data(T, _, _, _, _), T).
+data_destinations(data(_, D, _, _, _), D).
+data_students(data(_, _, S, _, _), S).
+data_minimum_useful_time(data(_, _, _, M, _), M).
+data_locations(data(_, _, _, _, L), L).
 
 % -----------------------------------------------------------------------------
 % Plan structure
@@ -80,8 +81,8 @@ data_minimum_useful_time(data(_, _, _, M), M).
 
 % [OutgoingTripIndex, IncomingTripIndex]
 
-plan_outgoing_trip_index([O, _], O).
-plan_incoming_trip_index([_, I], I).
+plan_outgoing_trip([O, _], O).
+plan_incoming_trip([_, I], I).
 
 create_plans(N, Plans) :-
     length(Plans, N),
@@ -96,12 +97,12 @@ restrict_lengths([H | T], N) :-
 % Structure combinations
 % -----------------------------------------------------------------------------
 
-data_plan_outgoing_trip(Plan, Data, Trip) :-
-    plan_outgoing_trip_index(Plan, O),
+data_plan_outgoing_trip(Data, Plan, Trip) :-
+    plan_outgoing_trip(Plan, O),
     data_trips(Data, Trips),
     nth1(O, Trips, Trip).
 
 data_plan_incoming_trip(Data, Plan, Trip) :-
-    plan_outgoing_trip_index(Plan, I),
+    plan_incoming_trip(Plan, I),
     data_trips(Data, Trips),
     nth1(I, Trips, Trip).
