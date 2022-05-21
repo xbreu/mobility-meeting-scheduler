@@ -9,9 +9,9 @@ main :-
 
     % Hard Constraints
     restrict_start_and_end_in_current_city(Data, Plans),
-    
-    % restrict_destinations(Data, Plans, Destination),
+    restrict_middle_location_is_the_same(Data, Plans),
 
+    % restrict_same_destination(Data, Plans),
     % Label and Output
     flatten(Plans, Variables),
     print(Variables), nl,
