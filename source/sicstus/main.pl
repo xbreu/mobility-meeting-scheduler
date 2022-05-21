@@ -1,18 +1,35 @@
 :- consult('./data-structures.pl').
 :- consult('./restrictions.pl').
+:- consult('./utils.pl').
 
 main :-
+    % Variable Creation
     read_data(Data),
-    print(Data),
-    data_students(Data, Students),
-    length(Students, N),
-    create_plans(N, Plans),
-    print(Plans).
+    create_plans(Data, Plans),
 
-% student("budapest", ["05/05/2022", "06/05/2022"], 1, 600, "05:30:00", "23:30:00")
-% trip("wien", "zagreb", "09/05/2022, 10:10:00", "09/05/2022, 10:55:00", 45, 212, 0)
+    % Hard Constraints
+    restrict_start_and_end_in_current_city(Data, Plans),
+    
+    % restrict_destinations(Data, Plans, Destination),
+
+    % Label and Output
+    flatten(Plans, Variables),
+    print(Variables), nl,
+    labeling([], Variables),
+    print_plans(Data, Plans).
 
 print_elements([]) :- !.
 print_elements([H | T]) :-
     print(H), nl,
     print_elements(T).
+
+print_plans(_, _, []).
+print_plans(Data, I, [P | Ps]) :-
+    plan_outgoing_trip(P, To),
+    plan_incoming_trip(P, Ti),
+    format('| Student ~`0t~d~12| | Outgoing ~`0t~d~27| | Incoming ~`0t~d~42| |~n', [I, To, Ti]),
+    I1 is I + 1,
+    print_plans(Data, I1, Ps).
+
+print_plans(D, Ps) :-
+    print_plans(D, 1, Ps).

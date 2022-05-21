@@ -112,7 +112,7 @@ json_to_list_of_destinations(Ls, [J | Js], [D | Ds]) :-
     json_to_list_of_destinations(Ls, Js, Ds).
 
 json_to_trip(Locations, J,
-    trip(Origin, Destination, Departure, Arrival, Duration, Price, Stops)) :-
+    [Origin, Destination, Departure, Arrival, Duration, Price, Stops]) :-
     object_attribute_value(J, origin, OriginValue),
     nth1(Origin, Locations, OriginValue),
     object_attribute_value(J, destination, DestinationValue),
