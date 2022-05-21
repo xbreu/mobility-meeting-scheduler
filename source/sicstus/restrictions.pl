@@ -3,21 +3,6 @@
 
 :- use_module(library(clpfd)).
 
-% Each plan element must be a valid index for a trip in the database.
-restrict_plans_domains(Data, Plans) :-
-    data_locations(Data, Locations),
-    length(Locations, LocationsSize),
-    restrict_plans_domains_(LocationsSize, Plans).
-
-restrict_plans_domains_(_, []).
-restrict_plans_domains_(N, [P | Ps]) :-
-    restrict_plan_domain(N, P),
-    restrict_plans_domains_(N, Ps).
-
-restrict_plan_domain(N, Plan) :-
-    length(Plan, 2),
-    domain(Plan, 1, N).
-
 % The outgoing trip of each student must start in its current city, and the
 % same is true for the end of the incoming trip.
 restrict_start_and_end_in_current_city(Data, Plans) :-
@@ -54,16 +39,10 @@ restrict_middle_location_is_the_same(Origins, Destinations, [Plan | Plans]) :-
     Destination #= Origin,
     restrict_middle_location_is_the_same(Origins, Destinations, Plans).
 
-% Every student needs to go to the same city
-% restrict_same_destination(Data, Plans) :-
-
-% restrict_destinations(_, [], _).
-% restrict_destinations(Data, [P | Ps], D) :-
-%     data_plan_outgoing_trip(Data, P, To),
-%     data_plan_incoming_trip(Data, P, Ti),
-%     trip_origin(Ti, Io),
-%     trip_destination(To, Od),
-%     Io #= Od,
-%     Io #= D,
-%     Od #= D,
-%     restrict_destinations(Data, Ps, D).
+% Every student needs to go to the same city.
+restrict_same_destination(Data, Plans) :-
+    data_trips(Data, Trips),
+    map(trip_destination, Trips, TripDestinations),
+    map(plan_outgoing_trip, Plans, OutgoingTrips),
+    indices_access(TripDestinations, OutgoingTrips, Destinations),
+    nvalue(1, Destinations).
