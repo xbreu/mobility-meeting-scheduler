@@ -37,7 +37,26 @@ restrict_end_in_current_city(Cities, Trips, Plans) :-
     map(plan_incoming_trip, Plans, IncomingTrips),
     indices_access(TripDestinations, IncomingTrips, Cities).
 
+% In every plan, the end of the outgoing trip is the same as the origin of the
+% incoming one.
+restrict_middle_location_is_the_same(Data, Plans) :-
+    data_trips(Data, Trips),
+    map(trip_origin, Trips, TripOrigins),
+    map(trip_destination, Trips, TripDestinations),
+    restrict_middle_location_is_the_same(TripOrigins, TripDestinations, Plans).
+
+restrict_middle_location_is_the_same(_, _, []).
+restrict_middle_location_is_the_same(Origins, Destinations, [Plan | Plans]) :-
+    plan_outgoing_trip(Plan, Outgoing),
+    plan_incoming_trip(Plan, Incoming),
+    element(Outgoing, Destinations, Destination),
+    element(Incoming, Origins, Origin),
+    Destination #= Origin,
+    restrict_middle_location_is_the_same(Origins, Destinations, Plans).
+
 % Every student needs to go to the same city
+% restrict_same_destination(Data, Plans) :-
+
 % restrict_destinations(_, [], _).
 % restrict_destinations(Data, [P | Ps], D) :-
 %     data_plan_outgoing_trip(Data, P, To),
