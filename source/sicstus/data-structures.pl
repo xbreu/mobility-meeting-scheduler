@@ -1,5 +1,8 @@
 :- consult('./input.pl').
 
+:- use_module(library(clpfd)).
+:- use_module(library(lists)).
+
 % -----------------------------------------------------------------------------
 % Date structure
 % -----------------------------------------------------------------------------
@@ -39,15 +42,15 @@ datetime_seconds(datetime(_, time(_, _, S)), S).
 % Trip structure
 % -----------------------------------------------------------------------------
 
-% trip(Origin, Destination, Departure, Arrival, Duration, Price, Stops)
+% [Origin, Destination, Departure, Arrival, Duration, Price, Stops]
 
-trip_origin(trip(O, _, _, _, _, _, _), O).
-trip_destination(trip(_, D, _, _, _, _, _), D).
-trip_departure(trip(_, _, D, _, _, _, _), D).
-trip_arrival(trip(_, _, _, A, _, _, _), A).
-trip_duration(trip(_, _, _, _, D, _, _), D).
-trip_price(trip(_, _, _, _, _, P, _), P).
-trip_stops(trip(_, _, _, _, _, _, S), S).
+trip_origin([O, _, _, _, _, _, _], O).
+trip_destination([_, D, _, _, _, _, _], D).
+trip_departure([_, _, D, _, _, _, _], D).
+trip_arrival([_, _, _, A, _, _, _], A).
+trip_duration([_, _, _, _, D, _, _], D).
+trip_price([_, _, _, _, _, P, _], P).
+trip_stops([_, _, _, _, _, _, S], S).
 
 % -----------------------------------------------------------------------------
 % Student structure
@@ -84,14 +87,10 @@ data_locations(data(_, _, _, _, L), L).
 plan_outgoing_trip([O, _], O).
 plan_incoming_trip([_, I], I).
 
-create_plans(N, Plans) :-
-    length(Plans, N),
-    restrict_lengths(Plans, 2).
-
-restrict_lengths([], _).
-restrict_lengths([H | T], N) :-
-    length(H, N),
-    restrict_lengths(T, N).
+create_plans(Data, Plans) :-
+    data_students(Data, Students),
+    length(Students, PlansSize),
+    length(Plans, PlansSize).
 
 % -----------------------------------------------------------------------------
 % Structure combinations
