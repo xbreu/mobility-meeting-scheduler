@@ -1,6 +1,9 @@
 :- use_module(library(json)).
 :- use_module(library(lists)).
 
+:- consult('./data/datetime.pl').
+:- consult('./data/trip.pl').
+
 % -----------------------------------------------------------------------------
 % Reading from files
 % -----------------------------------------------------------------------------
@@ -162,5 +165,32 @@ read_data(data(Trips, Destinations, Students, MinimumUsefulTime, Locations)) :-
     object_attribute_value(Js, minimumTime, MinimumUsefulTime),
     object_attribute_value(Js, destinations, Ds),
     json_to_list_of_destinations(Locations, Ds, Destinations),
-    json_to_list_of_trips(Locations, Jf, Trips),
+    json_to_list_of_trips(Locations, Jf, HeterogeneousTrips),
+    add_homogeneous_trips(HeterogeneousTrips, Locations, Trips),
     json_to_list_of_students(Locations, Ss, Students).
+
+add_homogeneous_trips(Trips, Locations, FinalTrips) :-
+    extreme_trip_dates(Trips, MinDate, MaxDate),
+    length(Locations, LocationsSize),
+    get_homogeneous_trips(LocationsSize, MinDate, MaxDate, HomogeneousTrips),
+    append(Trips, HomogeneousTrips, FinalTrips).
+
+get_homogeneous_trips(0, _, _, []).
+get_homogeneous_trips(Location, O, I, [To, Ti | Ts]) :-
+    To = [Location, Location, O, O, 0, 0, 0],
+    Ti = [Location, Location, I, I, 0, 0, 0],
+    NextLocation is Location - 1,
+    get_homogeneous_trips(NextLocation, O, I, Ts).
+
+extreme_trip_dates([], Min, Max, Min, Max).
+extreme_trip_dates([Trip | Trips], AMin, AMax, Min, Max) :-
+    trip_departure_date(Trip, Departure),
+    trip_arrival_date(Trip, Arrival),
+    earlier_date(AMin, Departure, IMin),
+    later_date(AMax, Arrival, IMax),
+    extreme_trip_dates(Trips, IMin, IMax, Min, Max).
+
+extreme_trip_dates([Trip | Trips], Min, Max) :-
+    trip_departure_date(Trip, Departure),
+    trip_arrival_date(Trip, Arrival),
+    extreme_trip_dates(Trips, Departure, Arrival, Min, Max).

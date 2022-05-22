@@ -1,56 +1,9 @@
 :- consult('./input.pl').
+:- consult('./data/datetime.pl').
+:- consult('./data/trip.pl').
 
 :- use_module(library(clpfd)).
 :- use_module(library(lists)).
-
-% -----------------------------------------------------------------------------
-% Date structure
-% -----------------------------------------------------------------------------
-
-% date(Y, M, D)
-
-date_year(date(Y, _, _), Y).
-date_month(date(_, M, _), M).
-date_day(date(_, _, D), D).
-
-% -----------------------------------------------------------------------------
-% Time structure
-% -----------------------------------------------------------------------------
-
-% time(Hs, Ms, Ss)
-
-time_hours(time(H, _, _), H).
-time_minutes(time(_, M, _), M).
-time_seconds(time(_, _, S), S).
-
-% -----------------------------------------------------------------------------
-% Datetime structure
-% -----------------------------------------------------------------------------
-
-% datetime(date(Y, M, D), time(Hs, Ms, Ss))
-
-datetime_date(datetime(D, _), D).
-datetime_time(datetime(_, T), T).
-datetime_year(datetime(date(Y, _, _), _), Y).
-datetime_month(datetime(date(_, M, _), _), M).
-datetime_day(datetime(date(_, _, D), _), D).
-datetime_hours(datetime(_, time(H, _, _)), H).
-datetime_minutes(datetime(_, time(_, M, _)), M).
-datetime_seconds(datetime(_, time(_, _, S)), S).
-
-% -----------------------------------------------------------------------------
-% Trip structure
-% -----------------------------------------------------------------------------
-
-% [Origin, Destination, Departure, Arrival, Duration, Price, Stops]
-
-trip_origin([O, _, _, _, _, _, _], O).
-trip_destination([_, D, _, _, _, _, _], D).
-trip_departure([_, _, D, _, _, _, _], D).
-trip_arrival([_, _, _, A, _, _, _], A).
-trip_duration([_, _, _, _, D, _, _], D).
-trip_price([_, _, _, _, _, P, _], P).
-trip_stops([_, _, _, _, _, _, S], S).
 
 % -----------------------------------------------------------------------------
 % Student structure
