@@ -1015,14 +1015,5 @@
         "duration": 45,
         "price": "212",
         "stops": 0
-    },
-    {
-        "origin": "wien",
-        "destination": "wien",
-        "departure": "09/05/2022, 19:45:00 ",
-        "arrival": "09/05/2022, 20:30:00 ",
-        "duration": 45,
-        "price": "212",
-        "stops": 0
     }
 ]
