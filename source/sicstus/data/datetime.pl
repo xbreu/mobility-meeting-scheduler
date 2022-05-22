@@ -48,6 +48,36 @@ time_hours(time(H, _, _), H).
 time_minutes(time(_, M, _), M).
 time_seconds(time(_, _, S), S).
 
+earlier_hour(time(H1, M1, S1), time(H2, M2, S2), time(H1, M1, S1)) :-
+    (
+        (
+            H1 < H2
+        ); (
+            H1 = H2,
+            M1 < M2
+        ); (
+            H1 = H2,
+            M1 = M2,
+            S1 < S2
+        )
+    ), !.
+earlier_hour(_, H, H).
+
+later_hour(time(H1, M1, S1), time(H2, M2, S2), time(H1, M1, S1)) :-
+    (
+        (
+            H1 > H2
+        ); (
+            H1 = H2,
+            M1 > M2
+        ); (
+            H1 = H2,
+            M1 = M2,
+            S1 > S2
+        )
+    ), !.
+later_hour(_, H, H).
+
 % -----------------------------------------------------------------------------
 % Datetime structure
 % -----------------------------------------------------------------------------
@@ -62,3 +92,44 @@ datetime_day(datetime(date(_, _, D), _), D).
 datetime_hours(datetime(_, time(H, _, _)), H).
 datetime_minutes(datetime(_, time(_, M, _)), M).
 datetime_seconds(datetime(_, time(_, _, S)), S).
+
+earlier_datetime(datetime(D1, T1), datetime(D2, T2), datetime(D1, T1)) :-
+    (
+        (
+            earlier_date(D1, D2, D1)
+        ); (
+            D1 = D2,
+            earlier_hour(H1, H2, H1)
+        )
+    ), !.
+earlier_datetime(_, D, D).
+
+later_datetime(datetime(D1, T1), datetime(D2, T2), datetime(D1, T1)) :-
+    (
+        (
+            later_date(D1, D2, D1)
+        ); (
+            D1 = D2,
+            later_hour(H1, H2, H1)
+        )
+    ), !.
+later_datetime(_, D, D).
+
+extreme_datetimes([Datetime | Datetimes], Min, Max) :-
+    extreme_datetimes(Datetimes, Datetime, Datetime, Min, Max).
+
+extreme_datetimes([], Min, Max, Min, Max).
+extreme_datetimes([H | T], AMin, AMax, Min, Max) :-
+    earlier_datetime(AMin, H, IMin),
+    later_datetime(AMax, H, IMax),
+    extreme_datetimes(T, IMin, IMax, Min, Max).
+
+earliest_datetime([], A, A).
+earliest_datetime([H | T], A, R) :-
+    earlier_datetime(A, H, I),
+    earliest_datetime(T, I, R).
+
+latest_datetime([], A, A).
+latest_datetime([H | T], A, R) :-
+    later_datetime(A, H, I),
+    latest_datetime(T, I, R).

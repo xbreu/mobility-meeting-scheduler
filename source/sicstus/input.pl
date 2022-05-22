@@ -1,6 +1,7 @@
 :- use_module(library(json)).
 :- use_module(library(lists)).
 
+:- consult('../utils.pl').
 :- consult('./data/datetime.pl').
 :- consult('./data/trip.pl').
 
@@ -170,9 +171,12 @@ read_data(data(Trips, Destinations, Students, MinimumUsefulTime, Locations)) :-
     json_to_list_of_students(Locations, Ss, Students).
 
 add_homogeneous_trips(Trips, Locations, FinalTrips) :-
-    extreme_trip_dates(Trips, MinDate, MaxDate),
+    map(trip_departure, Trips, Departures),
+    map(trip_arrival, Trips, Arrivals),
+    append(Departures, Arrivals, Datetimes),
+    extreme_datetimes(Datetimes, Min, Max),
     length(Locations, LocationsSize),
-    get_homogeneous_trips(LocationsSize, MinDate, MaxDate, HomogeneousTrips),
+    get_homogeneous_trips(LocationsSize, Min, Max, HomogeneousTrips),
     append(Trips, HomogeneousTrips, FinalTrips).
 
 get_homogeneous_trips(0, _, _, []).
