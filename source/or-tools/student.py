@@ -4,7 +4,7 @@ from dataclasses import dataclass
 @dataclass
 class Student:
     city: str
-    avialability: list
+    availability: list
     max_connections: int
     max_duration: int
     earliest_departure: int
