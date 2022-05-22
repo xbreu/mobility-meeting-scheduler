@@ -1,10 +1,27 @@
 from datetime import datetime
 from typing import List
 from ortools.sat.python import cp_model
-from ortools.constraint_solver import pywrapcp
 from flight import Flight
 from student import Student
 import json
+
+# Adds a 'Count' constraint
+# The number of 'value' in 'vars' must be 'num'
+
+
+def count(model: cp_model.CpModel, vars, value, num):
+    value = model.NewConstant(value)
+    trues = [model.NewIntVar(0, 1, 'true' + str(i)) for i in range(len(vars))]
+    for i in range(len(vars)):
+        equal = model.NewBoolVar('equal')
+        model.Add(vars[i] == value).OnlyEnforceIf(equal)
+        model.Add(vars[i] != value).OnlyEnforceIf(equal.Not())
+
+        model.Add(trues[i] == 1).OnlyEnforceIf(equal)
+        model.Add(trues[i] == 0).OnlyEnforceIf(equal.Not())
+
+    model.Add(sum(trues) == model.NewConstant(num))
+
 
 f = open("../../data/flights.json")
 json_flights = json.load(f)
@@ -22,47 +39,83 @@ date_format = '%d/%m/%Y, %H:%M:%S '
 
 flights: List[Flight] = []
 for flight in json_flights:
-    departure = int(datetime.strptime(
-        flight['departure'], date_format).strftime('%Y%m%d%H%M%S'))
-    arrival = int(datetime.strptime(
-        flight['arrival'], date_format).strftime('%Y%m%d%H%M%S'))
+    departure = datetime.strptime(flight['departure'], date_format)
+    arrival = datetime.strptime(flight['arrival'], date_format)
     flights.append(Flight(flight['origin'], flight['destination'], departure,
                    arrival, flight['duration'], int(flight['price']), flight['stops']))
 
 students: List[Student] = []
 for student in json_students:
-    availability = [int(datetime.strptime(
-        date, "%d/%m/%Y").strftime('%Y%m%d%H%M%S')) for date in student['availability']]
+    availability = [datetime.strptime(date, "%d/%m/%Y")
+                    for date in student['availability']]
+    earliest_departure = datetime.strptime(
+        student['earliestDeparture'], '%H:%M:%S')
+    latest_arrival = datetime.strptime(student['latestArrival'], '%H:%M:%S')
     students.append(Student(student['city'], availability, student['maxConnections'],
-                    student['maxDuration'], student['earliestDeparture'], student['latestArrival']))
+                    student['maxDuration'], earliest_departure, latest_arrival))
 
-# model = cp_model.CpModel()
-model = pywrapcp.Solver('CPSimple')
+model = cp_model.CpModel()
 
-chosen_flights = []
-for i in range(len(flights)):
-    chosen_flights.append(model.IntVar(
-        -1, 2*len(students) - 1, 'chosen_flight' + str(i)))
+output_flights = [model.NewIntVar(-len(students), len(students), str(i))
+                  for i in range(len(flights))]
 
-# -1 for unused flights
-model.Add(model.AllDifferentExcept(chosen_flights, -1))
-
+# each student has 1 outgoing and 1 incoming flight
 for i in range(len(students)):
-    for j in range(len(flights)):
-        if (students[i].city == flights[j].origin):
-            model.Add(chosen_flights[j] == i or chosen_flights[j] == -1)
-        # elif (students[i].city == flights[j].destination):
-        #     model.Add(chosen_flights[j] == i + len(students) - 1 or chosen_flights[j] == -1)
+    count(model, output_flights, i + 1, 1)
+    count(model, output_flights, -i - 1, 1)
 
-decision_builder = model.Phase(
-    chosen_flights, model.CHOOSE_RANDOM, model.ASSIGN_RANDOM_VALUE)
-count = 0
-model.NewSearch(decision_builder)
-while count < 10 and model.NextSolution():
-    count += 1
-    solution = 'Solution {}:\n'.format(count)
-    for i in range(len(flights)):
-        if chosen_flights[i].Value() != -1:
-            solution += str(flights[i]) + '\n'
-    print(solution)
-model.EndSearch()
+for i in range(len(flights)):
+    for j in range(len(students)):
+        departure = j+1
+        arrival = -j-1
+
+        # origin must be student city
+        if (flights[i].origin != students[j].city):
+            model.Add(output_flights[i] != departure)
+        # destination must be student city
+        if (flights[i].destination != students[j].city):
+            model.Add(output_flights[i] != arrival)
+
+        # departure after earliest departure
+        if (flights[i].departure.time() < students[j].earliest_departure.time()):
+            model.Add(output_flights[i] != departure)
+        # arrival before latest arrival
+        if (flights[i].arrival.time() > students[j].latest_arrival.time()):
+            model.Add(output_flights[i] != arrival)
+
+        # departure during availability
+        if (flights[i].departure.date() < students[j].availability[0].date()
+                or flights[i].departure.date() > students[j].availability[-1].date()):
+            model.Add(output_flights[i] != departure)
+
+        # arrival during availability
+        if (flights[i].arrival.date() < students[j].availability[0].date()
+                or flights[i].arrival.date() > students[j].availability[-1].date()):
+            model.Add(output_flights[i] != arrival)
+
+        # flight must have no more than max_connections
+        if (flights[i].stops > students[j].max_connections):
+            model.Add(output_flights[i] != departure)
+            model.Add(output_flights[i] != arrival)
+
+        # flight duration must be less or equal to max_duration
+        if (flights[i].duration > students[j].max_duration):
+            model.Add(output_flights[i] != departure)
+            model.Add(output_flights[i] != arrival)
+
+
+
+model.Add(flights[2] != 2)
+
+solver = cp_model.CpSolver()
+status = solver.Solve(model)
+# print(solver._CpSolver__solution)
+print("status: " + solver.StatusName())
+print("wallTime: " + str(solver.WallTime()))
+print("userTime: " + str(solver.UserTime()))
+print()
+if status == cp_model.OPTIMAL or status == cp_model.FEASIBLE:
+    for i in range(len(output_flights)):
+        value = solver.Value(output_flights[i])
+        if value != 0:
+            print(f'{flights[i]} : {value}')
