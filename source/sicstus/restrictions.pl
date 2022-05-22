@@ -46,3 +46,41 @@ restrict_same_destination(Data, Plans) :-
     map(plan_outgoing_trip, Plans, OutgoingTrips),
     indices_access(TripDestinations, OutgoingTrips, Destinations),
     nvalue(1, Destinations).
+
+% Each student will have trips that take less than their maximum possible
+% duration.
+restrict_max_durations(Data, Plans) :-
+    data_students(Data, Students),
+    data_trips(Data, Trips),
+    map(student_max_duration, Students, MaxDurations),
+    map(trip_duration, Trips, Durations),
+    restrict_max_durations(Durations, MaxDurations, Plans).
+
+restrict_max_durations(_, [], []).
+restrict_max_durations(Durations, [Max | Tail], [Plan | Plans]) :-
+    plan_incoming_trip(Plan, Incoming),
+    plan_outgoing_trip(Plan, Outgoing),
+    element(Incoming, Durations, IncomingDuration),
+    element(Outgoing, Durations, OutgoingDuration),
+    IncomingDuration #=< Max,
+    OutgoingDuration #=< Max,
+    restrict_max_durations(Durations, Tail, Plans).
+
+% Each student will have trips that have at maximum the respective provided
+% number of connections.
+restrict_max_connections(Data, Plans) :-
+    data_students(Data, Students),
+    data_trips(Data, Trips),
+    map(student_max_connections, Students, MaxConnections),
+    map(trip_stops, Trips, Stops),
+    restrict_max_connections(Stops, MaxConnections, Plans).
+
+restrict_max_connections(_, [], []).
+restrict_max_connections(Stops, [Max | Tail], [Plan | Plans]) :-
+    plan_incoming_trip(Plan, Incoming),
+    plan_outgoing_trip(Plan, Outgoing),
+    element(Incoming, Stops, IncomingConnections),
+    element(Outgoing, Stops, OutgoingConnections),
+    IncomingConnections #=< Max,
+    OutgoingConnections #=< Max,
+    restrict_max_connections(Stops, Tail, Plans).
