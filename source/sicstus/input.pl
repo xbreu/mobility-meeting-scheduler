@@ -1,6 +1,5 @@
 :- use_module(library(json)).
 :- use_module(library(lists)).
-
 :- consult('../utils.pl').
 :- consult('./data/datetime.pl').
 :- consult('./data/trip.pl').

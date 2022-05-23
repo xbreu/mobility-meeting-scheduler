@@ -1,7 +1,9 @@
-:- consult('./data-structures.pl').
-:- consult('./utils.pl').
-
 :- use_module(library(clpfd)).
+:- consult('./data/data.pl').
+:- consult('./data/plan.pl').
+:- consult('./data/student.pl').
+:- consult('./data/trip.pl').
+:- consult('./utils.pl').
 
 restrict_hard_constraints(Data, Plans) :-
     restrict_start_and_end_in_current_city(Data, Plans),
@@ -150,3 +152,10 @@ restrict_latest_arrivals(Hs, Ms, Ss, [Latest | Tail], [Plan | Plans]) :-
 
 % Every student needs the trip to take place entirely within its available
 % days.
+
+% TODO
+
+% The time all the students will spend together needs to be larger than the
+% provided minimum useful time
+
+% TODO
