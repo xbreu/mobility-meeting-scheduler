@@ -170,13 +170,21 @@ read_data(data(Trips, Destinations, Students, MinimumUsefulTime, Locations)) :-
     json_to_list_of_students(Locations, Ss, Students).
 
 add_homogeneous_trips(Trips, Locations, FinalTrips) :-
+    % Calculate the earlier and latest dates
     map(trip_departure, Trips, Departures),
     map(trip_arrival, Trips, Arrivals),
     append(Departures, Arrivals, Datetimes),
-    extreme_datetimes(Datetimes, Min, Max),
-    length(Locations, LocationsSize),
-    get_homogeneous_trips(LocationsSize, Min, Max, HomogeneousTrips),
-    append(Trips, HomogeneousTrips, FinalTrips).
+    extreme_datetimes(Datetimes, MinDatetime, MaxDatetime),
+    datetime_date(MinDatetime, MinDate),
+    datetime_date(MaxDatetime, MaxDate),
+    predecessor_date(MinDate, DepartureDate),
+    successor_date(MaxDate, ArrivalDate),
+    DepartureDatetime = datetime(DepartureDate, time(23, 59, 59)),
+    ArrivalDatetime = datetime(ArrivalDate, time(0, 0, 0)),
+    % Create the dummy trips
+    length(Locations, Ls),
+    get_homogeneous_trips(Ls, DepartureDatetime, ArrivalDatetime, Th),
+    append(Trips, Th, FinalTrips).
 
 get_homogeneous_trips(0, _, _, []).
 get_homogeneous_trips(Location, O, I, [To, Ti | Ts]) :-
@@ -184,16 +192,3 @@ get_homogeneous_trips(Location, O, I, [To, Ti | Ts]) :-
     Ti = [Location, Location, I, I, 0, 0, 0],
     NextLocation is Location - 1,
     get_homogeneous_trips(NextLocation, O, I, Ts).
-
-extreme_trip_dates([], Min, Max, Min, Max).
-extreme_trip_dates([Trip | Trips], AMin, AMax, Min, Max) :-
-    trip_departure_date(Trip, Departure),
-    trip_arrival_date(Trip, Arrival),
-    earlier_date(AMin, Departure, IMin),
-    later_date(AMax, Arrival, IMax),
-    extreme_trip_dates(Trips, IMin, IMax, Min, Max).
-
-extreme_trip_dates([Trip | Trips], Min, Max) :-
-    trip_departure_date(Trip, Departure),
-    trip_arrival_date(Trip, Arrival),
-    extreme_trip_dates(Trips, Departure, Arrival, Min, Max).
