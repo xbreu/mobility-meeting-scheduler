@@ -1,6 +1,33 @@
 :- use_module(library(clpfd)).
 
 % -----------------------------------------------------------------------------
+% Year operations
+% -----------------------------------------------------------------------------
+
+leap_year(Y) :-
+    0 = Y mod 4,
+    0 \= Y mod 100.
+
+% -----------------------------------------------------------------------------
+% Month operations
+% -----------------------------------------------------------------------------
+
+days_month(_, 1, 31).
+days_month(Y, 2, 29) :-
+    leap_year(Y), !.
+days_month(_, 2, 28).
+days_month(_, 3, 31).
+days_month(_, 4, 30).
+days_month(_, 5, 31).
+days_month(_, 6, 30).
+days_month(_, 7, 31).
+days_month(_, 8, 31).
+days_month(_, 9, 30).
+days_month(_, 10, 31).
+days_month(_, 11, 30).
+days_month(_, 12, 31).
+
+% -----------------------------------------------------------------------------
 % Date structure
 % -----------------------------------------------------------------------------
 
@@ -39,6 +66,26 @@ later_date(date(Y1, M1, D1), date(Y2, M2, D2), date(Y1, M1, D1)) :-
         )
     ), !.
 later_date(_, D, D).
+
+predecessor_date(date(Y, M, D), date(Y, M, Dr)) :-
+    D > 2, !,
+    Dr is D - 1.
+predecessor_date(date(Y, M, D), date(Y, Mr, Dr)) :-
+    M > 2, !,
+    Mr is M - 1,
+    days_month(Y, Mr, Dr).
+predecessor_date(date(Y, M, D), date(Yr, 12, 31)) :-
+    Yr is Y - 1.
+
+successor_date(date(Y, M, D), date(Y, M, Dr)) :-
+    days_month(Y, M, Dm),
+    D < Dm - 1, !,
+    Dr is D + 1.
+successor_date(date(Y, M, D), date(Y, Mr, 1)) :-
+    M < 12, !,
+    Mr is M + 1.
+successor_date(date(Y, M, D), date(Yr, 1, 1)) :-
+    Yr is Y + 1.
 
 % -----------------------------------------------------------------------------
 % Time structure
