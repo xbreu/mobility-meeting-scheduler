@@ -1,4 +1,5 @@
-:- consult('./data-structures.pl').
+:- consult('./data/plan.pl').
+:- consult('./input.pl').
 :- consult('./restrictions.pl').
 :- consult('./utils.pl').
 
