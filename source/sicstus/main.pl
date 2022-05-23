@@ -8,11 +8,7 @@ main :-
     create_plans(Data, Plans),
 
     % Hard Constraints
-    restrict_start_and_end_in_current_city(Data, Plans),
-    restrict_middle_location_is_the_same(Data, Plans),
-    restrict_same_destination(Data, Plans),
-    restrict_max_durations(Data, Plans),
-    restrict_max_connections(Data, Plans),
+    restrict_hard_constraints(Data, Plans),
 
     % Label and Output
     flatten(Plans, Variables),

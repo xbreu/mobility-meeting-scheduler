@@ -3,6 +3,15 @@
 
 :- use_module(library(clpfd)).
 
+restrict_hard_constraints(Data, Plans) :-
+    restrict_start_and_end_in_current_city(Data, Plans),
+    restrict_middle_location_is_the_same(Data, Plans),
+    restrict_same_destination(Data, Plans),
+    restrict_max_durations(Data, Plans),
+    restrict_max_connections(Data, Plans),
+    restrict_earliest_departures(Data, Plans),
+    restrict_latest_arrivals(Data, Plans).
+
 % The outgoing trip of each student must start in its current city, and the
 % same is true for the end of the incoming trip.
 restrict_start_and_end_in_current_city(Data, Plans) :-
@@ -77,10 +86,50 @@ restrict_max_connections(Data, Plans) :-
 
 restrict_max_connections(_, [], []).
 restrict_max_connections(Stops, [Max | Tail], [Plan | Plans]) :-
-    plan_incoming_trip(Plan, Incoming),
     plan_outgoing_trip(Plan, Outgoing),
-    element(Incoming, Stops, IncomingConnections),
+    plan_incoming_trip(Plan, Incoming),
     element(Outgoing, Stops, OutgoingConnections),
-    IncomingConnections #=< Max,
+    element(Incoming, Stops, IncomingConnections),
     OutgoingConnections #=< Max,
+    IncomingConnections #=< Max,
     restrict_max_connections(Stops, Tail, Plans).
+
+% Every student will leave their city after earliest departure.
+restrict_earliest_departures(Data, Plans) :-
+    data_students(Data, Students),
+    data_trips(Data, Trips),
+    map(student_earliest_departure, Students, Earliests),
+    map(trip_departure_time, Trips, Departures),
+    map(time_hours, Departures, Hours),
+    map(time_minutes, Departures, Minutes),
+    map(time_seconds, Departures, Seconds),
+    restrict_earliest_departures(Hours, Minutes, Seconds, Earliests, Plans).
+
+restrict_earliest_departures(_, _, _, [], []).
+restrict_earliest_departures(Hs, Ms, Ss, [Earliest | Tail], [Plan | Plans]) :-
+    plan_outgoing_trip(Plan, Trip),
+    element(Trip, Hs, TripH),
+    element(Trip, Ms, TripM),
+    element(Trip, Ss, TripS),
+    restrict_later_time(time(TripH, TripM, TripS), Earliest),
+    restrict_earliest_departures(Hs, Ms, Ss, Tail, Plans).
+
+% Every student will arrive in their city before their latest arrival.
+restrict_latest_arrivals(Data, Plans) :-
+    data_students(Data, Students),
+    data_trips(Data, Trips),
+    map(student_earliest_departure, Students, Latests),
+    map(trip_arrival_time, Trips, Arrivals),
+    map(time_hours, Arrivals, Hours),
+    map(time_minutes, Arrivals, Minutes),
+    map(time_seconds, Arrivals, Seconds),
+    restrict_latest_arrivals(Hours, Minutes, Seconds, Latests, Plans).
+
+restrict_latest_arrivals(_, _, _, [], []).
+restrict_latest_arrivals(Hs, Ms, Ss, [Latest | Tail], [Plan | Plans]) :-
+    plan_incoming_trip(Plan, Trip),
+    element(Trip, Hs, TripH),
+    element(Trip, Ms, TripM),
+    element(Trip, Ss, TripS),
+    restrict_earlier_time(time(TripH, TripM, TripS), Latest),
+    restrict_latest_arrivals(Hs, Ms, Ss, Tail, Plans).
