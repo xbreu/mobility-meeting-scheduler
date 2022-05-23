@@ -21,3 +21,11 @@ trip_departure_date(Trip, Date) :-
 trip_arrival_date(Trip, Date) :-
     trip_arrival(Trip, Arrival),
     datetime_date(Arrival, Date).
+
+trip_departure_time(Trip, Hour) :-
+    trip_departure(Trip, Departure),
+    datetime_time(Departure, Hour).
+
+trip_arrival_time(Trip, Hour) :-
+    trip_arrival(Trip, Arrival),
+    datetime_time(Arrival, Hour).
