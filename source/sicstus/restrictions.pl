@@ -7,6 +7,7 @@ restrict_hard_constraints(Data, Plans) :-
     restrict_start_and_end_in_current_city(Data, Plans),
     restrict_middle_location_is_the_same(Data, Plans),
     restrict_same_destination(Data, Plans),
+    restrict_destination_in_list(Data, Plans),
     restrict_max_durations(Data, Plans),
     restrict_max_connections(Data, Plans),
     restrict_earliest_departures(Data, Plans),
@@ -55,6 +56,19 @@ restrict_same_destination(Data, Plans) :-
     map(plan_outgoing_trip, Plans, OutgoingTrips),
     indices_access(TripDestinations, OutgoingTrips, Destinations),
     nvalue(1, Destinations).
+
+% The chosen destination needs to be a member of the provided list of possible
+% destinations.
+restrict_destination_in_list(Data, Plans) :-
+    data_destinations(Data, PossibleDestinations),
+    data_trips(Data, Trips),
+    list_to_fdset(PossibleDestinations, PossibleDestinationSet),
+    map(trip_destination, Trips, Destinations),
+    nth1(1, Plans, Plan),
+    plan_outgoing_trip(Plan, Trip),
+    element(Trip, Destinations, FinalDestination),
+    FinalDestination in_set PossibleDestinationSet.
+
 
 % Each student will have trips that take less than their maximum possible
 % duration.
@@ -133,3 +147,6 @@ restrict_latest_arrivals(Hs, Ms, Ss, [Latest | Tail], [Plan | Plans]) :-
     element(Trip, Ss, TripS),
     restrict_earlier_time(time(TripH, TripM, TripS), Latest),
     restrict_latest_arrivals(Hs, Ms, Ss, Tail, Plans).
+
+% Every student needs the trip to take place entirely within its available
+% days.
