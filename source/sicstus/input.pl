@@ -87,10 +87,11 @@ atom_to_time(A, time(Hs, Ms, Ss)) :-
     atom_string(A, S),
     phrase(time(Hs, Ms, Ss), S).
 
-list_of_atoms_to_list_of_dates([], []).
-list_of_atoms_to_list_of_dates([A | As], [D | Ds]) :-
-    atom_to_date(A, D),
-    list_of_atoms_to_list_of_dates(As, Ds).
+list_of_atoms_to_availability([], []).
+list_of_atoms_to_availability([[Start, End] | As], [[DStart, DEnd] | Ds]) :-
+    atom_to_date(Start, DStart),
+    atom_to_date(End, DEnd),
+    list_of_atoms_to_availability(As, Ds).
 
 % -----------------------------------------------------------------------------
 % Json to PROLOG's native structures
@@ -142,7 +143,7 @@ json_to_student(Locations, J, student(City, Availability, MaxConnections,
     object_attribute_value(J, latestArrival, LatestArrivalAtom),
 
     % Parsing of some attributes
-    list_of_atoms_to_list_of_dates(AvailabilityAtoms, Availability),
+    list_of_atoms_to_availability(AvailabilityAtoms, Availability),
     atom_to_time(EarliestDepartureAtom, EarliestDeparture),
     atom_to_time(LatestArrivalAtom, LatestArrival).
 
