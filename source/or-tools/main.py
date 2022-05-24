@@ -148,26 +148,34 @@ for i in range(len(flights)):
     for j in range(i, len(flights)):
         if (i == j): continue
 
+        # True if flights have absolute equality i.e. either they are not used or are used by the same person
         same_person_flights = model.NewBoolVar(f'same_person_fligths_{str(i)}-{str(j)}')
         model.Add(output_flights[i] == -output_flights[j]).OnlyEnforceIf(same_person_flights)
         model.Add(output_flights[i] != -output_flights[j]).OnlyEnforceIf(same_person_flights.Not())
+
         # If i is outgoing and j is incoming
         if (flights[i].arrival < flights[j].departure):
+            # If minimum time is not respected
             if (flights[j].departure - flights[i].arrival).total_seconds() < minimum_time*60:
+                # Both flights cannot be of the same student
                 used_flight = model.NewBoolVar(f'used_flight_{str(i)}')
                 model.Add(output_flights[i] != 0).OnlyEnforceIf(used_flight)
                 model.Add(output_flights[i] == 0).OnlyEnforceIf(used_flight.Not())
                 model.Add(output_flights[i] != output_flights[j]).OnlyEnforceIf(same_person_flights, used_flight)
             else:
+                # Flight i must be positive and flight j negative, or both 0
                 model.Add(output_flights[i] >= output_flights[j]).OnlyEnforceIf(same_person_flights)
         # If i is incoming and j is outgoing
         elif (flights[j].arrival < flights[i].departure):
+            # If minimum time is not respected
             if (flights[i].departure - flights[j].arrival).total_seconds() < minimum_time*60:
+                # Both flights cannot be of the same student
                 used_flight = model.NewBoolVar(f'used_flight_{str(i)}')
                 model.Add(output_flights[i] != 0).OnlyEnforceIf(used_flight)
                 model.Add(output_flights[i] == 0).OnlyEnforceIf(used_flight.Not())
                 model.Add(output_flights[i] != output_flights[j]).OnlyEnforceIf(same_person_flights, used_flight)
             else:
+                # Flight i must be negative and flight j positive, or both 0
                 model.Add(output_flights[i] <= output_flights[j]).OnlyEnforceIf(same_person_flights)
 
 # students_cost = [model.NewIntVar(
