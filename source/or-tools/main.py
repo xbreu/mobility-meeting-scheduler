@@ -47,8 +47,7 @@ for flight in json_flights:
 
 students: List[Student] = []
 for student in json_students:
-    availability = [datetime.strptime(date, "%d/%m/%Y")
-                    for date in student['availability']]
+    availability = [[datetime.strptime(date1, "%d/%m/%Y"), (datetime.strptime(date2, "%d/%m/%Y"))] for [date1, date2] in student['availability']]
     earliest_departure = datetime.strptime(
         student['earliestDeparture'], '%H:%M:%S')
     latest_arrival = datetime.strptime(student['latestArrival'], '%H:%M:%S')
@@ -104,15 +103,23 @@ for i in range(len(flights)):
         if (flights[i].arrival.time() > students[j].latest_arrival.time()):
             model.Add(output_flights[i] != incoming)
 
-        # departure during availability
-        if (flights[i].departure.date() < students[j].availability[0].date()
-                or flights[i].departure.date() > students[j].availability[-1].date()):
-            model.Add(output_flights[i] != outgoing)
+        departure_during_availability = False
+        arrival_during_availability = False
+        for [d1, d2] in students[j].availability:
+            # TODO: Create bool to verify if its inside at least one interval
+            # departure during availability
+            if (flights[i].departure.date() < d1.date()
+                    or flights[i].departure.date() > d2.date()):
+                departure_during_availability = True
 
-        # arrival during availability
-        if (flights[i].arrival.date() < students[j].availability[0].date()
-                or flights[i].arrival.date() > students[j].availability[-1].date()):
+            # arrival during availability
+            if (flights[i].arrival.date() < d1.date()
+                    or flights[i].arrival.date() > d2.date()):
+                arrival_during_availability = True
+        if not departure_during_availability:
             model.Add(output_flights[i] != incoming)
+        if not arrival_during_availability:
+            model.Add(output_flights[i] != outgoing)
 
         # flight must have no more than max_connections
         if (flights[i].stops > students[j].max_connections):
