@@ -1,4 +1,5 @@
 from datetime import datetime
+import math
 from typing import List
 from ortools.sat.python import cp_model
 from flight import Flight
@@ -73,8 +74,10 @@ for i in range(len(students)):
             b = model.NewBoolVar('b')
             model.Add(output_destinations[j] == 1).OnlyEnforceIf(b)
             model.Add(output_destinations[j] == 0).OnlyEnforceIf(b.Not())
-            model.Add(count(model, output_flights, i + 1) == 1).OnlyEnforceIf(b)
-            model.Add(count(model, output_flights, -i - 1) == 1).OnlyEnforceIf(b)
+            model.Add(count(model, output_flights, i + 1)
+                      == 1).OnlyEnforceIf(b)
+            model.Add(count(model, output_flights, -i - 1)
+                      == 1).OnlyEnforceIf(b)
 
 for i in range(len(flights)):
     for j in range(len(students)):
@@ -141,17 +144,62 @@ for i in range(len(flights)):
                 group_return.Not())
             model.Add(output_flights[i] >= 0).OnlyEnforceIf(group_return)
 
+for i in range(len(flights)):
+    for j in range(i, len(flights)):
+        if (i == j): continue
 
+        same_person_flights = model.NewBoolVar(f'same_person_fligths_{str(i)}-{str(j)}')
+        model.Add(output_flights[i] == -output_flights[j]).OnlyEnforceIf(same_person_flights)
+        model.Add(output_flights[i] != -output_flights[j]).OnlyEnforceIf(same_person_flights.Not())
+        # If i is outgoing and j is incoming
+        if (flights[i].arrival < flights[j].departure):
+            if (flights[j].departure - flights[i].arrival).total_seconds() < minimum_time*60:
+                used_flight = model.NewBoolVar(f'used_flight_{str(i)}')
+                model.Add(output_flights[i] != 0).OnlyEnforceIf(used_flight)
+                model.Add(output_flights[i] == 0).OnlyEnforceIf(used_flight.Not())
+                model.Add(output_flights[i] != output_flights[j]).OnlyEnforceIf(same_person_flights, used_flight)
+            else:
+                model.Add(output_flights[i] >= output_flights[j]).OnlyEnforceIf(same_person_flights)
+        # If i is incoming and j is outgoing
+        elif (flights[j].arrival < flights[i].departure):
+            if (flights[i].departure - flights[j].arrival).total_seconds() < minimum_time*60:
+                used_flight = model.NewBoolVar(f'used_flight_{str(i)}')
+                model.Add(output_flights[i] != 0).OnlyEnforceIf(used_flight)
+                model.Add(output_flights[i] == 0).OnlyEnforceIf(used_flight.Not())
+                model.Add(output_flights[i] != output_flights[j]).OnlyEnforceIf(same_person_flights, used_flight)
+            else:
+                model.Add(output_flights[i] <= output_flights[j]).OnlyEnforceIf(same_person_flights)
+
+# students_cost = [model.NewIntVar(
+#     0, 99999, 'student_cost_'+str(i))for i in range(len(students))]
+# for i in range(len(students)):
+#     flights_cost_for_students = [model.NewIntVar(
+#         0, 99999, 'flight_cost_for_' + str(i) + '-'+str(j)) for j in range(len(flights))]
+#     for j in range(len(flights)):
+#         outgoing = i+1
+#         incoming = -i-1
+
+#         b = model.NewBoolVar('b')
+#         model.Add(output_flights[j] == outgoing or output_flights[j] == incoming).OnlyEnforceIf(b)
+#         model.Add(
+#             output_flights[j] != outgoing and output_flights[j] != incoming).OnlyEnforceIf(b.Not())
+#         model.Add(flights_cost_for_students[j]
+#                   == flights[j].price).OnlyEnforceIf(b)
+#         model.Add(flights_cost_for_students[j] == 0).OnlyEnforceIf(b.Not())
+
+#     model.Add(students_cost[i] == sum(flights_cost_for_students))
+
+# model.Minimize(sum(students_cost))
 
 solver = cp_model.CpSolver()
 status = solver.Solve(model)
-# print(solver._CpSolver__solution)
-print("status: " + solver.StatusName())
-print("wallTime: " + str(solver.WallTime()))
-print("userTime: " + str(solver.UserTime()))
+print(solver._CpSolver__solution)
+# print("status: " + solver.StatusName())
+# print("wallTime: " + str(solver.WallTime()))
+# print("userTime: " + str(solver.UserTime()))
 print()
 if status == cp_model.OPTIMAL or status == cp_model.FEASIBLE:
     for i in range(len(output_flights)):
         value = solver.Value(output_flights[i])
         if value != 0:
-            print(f'{flights[i]} : {value}')
+            print(f'{flights[i]} : {value} : {i}')
