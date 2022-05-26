@@ -36,3 +36,10 @@ indices_access(_, [], []).
 indices_access(List, [Index | Indices], [Value | Values]) :-
     element(Index, List, Value),
     indices_access(List, Indices, Values).
+
+% Adds every two elements from List1 and List2 into a new list Sums.
+% sum_elements(List1, List2, Sums)
+sum_elements([], [], []).
+sum_elements([X | Xs], [Y | Ys], [S | Ss]) :-
+    S #= X + Y,
+    sum_elements(Xs, Ys, Ss).
