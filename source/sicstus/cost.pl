@@ -8,10 +8,12 @@
 calculate_cost(Data, Plans, Cost) :-
     calculate_useful_time(Data, Plans, UsefulTime),
     calculate_individual_costs(Data, Plans, IndividualCosts),
+    calculate_alone_times(Data, Plans, AloneTimes),
     sum(IndividualCosts, #=, TotalCost),
     Cost #= UsefulTime / TotalCost.
 
 % Returns the number of seconds all of the students will be in the destination.
+% TODO: consider homogeneous trips.
 calculate_useful_time(Data, Plans, UsefulTime) :-
     data_trips(Data, Trips),
     map(trip_arrival, Trips, TripArrivalsI),
@@ -36,3 +38,7 @@ calculate_individual_costs(Data, Plans, IndividualCosts) :-
     indices_access(TripPrices, IncomingTrips, IndividualIncomingCosts),
     sum_elements(IndividualOutgoingCosts, IndividualIncomingCosts, IndividualCosts).
 
+% Returns a list with the alone times for each student.
+% TODO: finish implementation.
+calculate_alone_times(Data, Plans, AloneTimes) :-
+    data_trips(Data, Trips).
