@@ -15,17 +15,8 @@ calculate_cost(Data, Plans, Cost) :-
 % Returns the number of seconds all of the students will be in the destination.
 % TODO: consider homogeneous trips.
 calculate_useful_time(Data, Plans, UsefulTime) :-
-    data_trips(Data, Trips),
-    map(trip_arrival, Trips, TripArrivalsI),
-    map(trip_departure, Trips, TripDeparturesI),
-    map(datetime_to_seconds, TripArrivalsI, TripArrivals),
-    map(datetime_to_seconds, TripDeparturesI, TripDepartures),
-    map(plan_outgoing_trip, Plans, OutgoingTripIndices),
-    map(plan_incoming_trip, Plans, IncomingTripIndices),
-    indices_access(TripArrivals, OutgoingTripIndices, OutgoingTrips),
-    indices_access(TripDepartures, IncomingTripIndices, IncomingTrips),
-    maximum(LastArrival, OutgoingTrips),
-    minimum(EarliestDeparture, IncomingTrips),
+    calculate_last_arrival(Data, Plans, LastArrival),
+    calculate_earliest_departure(Data, Plans, EarliestDeparture),
     UsefulTime #= EarliestDeparture - LastArrival.
 
 % Returns a list with the price that each student will have to pay.
@@ -39,6 +30,38 @@ calculate_individual_costs(Data, Plans, IndividualCosts) :-
     sum_elements(IndividualOutgoingCosts, IndividualIncomingCosts, IndividualCosts).
 
 % Returns a list with the alone times for each student.
-% TODO: finish implementation.
+% TODO: consider homogeneous trips.
 calculate_alone_times(Data, Plans, AloneTimes) :-
-    data_trips(Data, Trips).
+    data_trips(Data, Trips),
+    calculate_last_arrival(Data, Plans, LastArrival),
+    calculate_earliest_departure(Data, Plans, EarliestDeparture).
+
+% Returns the arrival of the last person.
+calculate_last_arrival(Data, Plans, LastArrival) :-
+    map(trip_arrival, Trips, TripArrivalsI),
+    map(datetime_to_seconds, TripArrivalsI, TripArrivals),
+    map(trip_heterogeneous, Trips, Heterogeneity),
+    map(plan_outgoing_trip, Plans, OutgoingTripIndices),
+    indices_access(TripArrivals, OutgoingTripIndices, OutgoingTrips),
+    indices_access(Heterogeneity, IncomingTripIndices, OutgoingHeterogeneity),
+    maximum_heterogeneous(OutgoingHeterogeneity, OutgoingTrips, LastArrival).
+
+% Returns the departure of the first person.
+calculate_earliest_departure(Data, Plans, EarliestDeparture) :-
+    map(trip_departure, Trips, TripDeparturesI),
+    map(datetime_to_seconds, TripDeparturesI, TripDepartures),
+    map(trip_heterogeneous, Trips, Heterogeneity),
+    map(plan_incoming_trip, Plans, IncomingTripIndices),
+    indices_access(TripDepartures, IncomingTripIndices, IncomingTrips),
+    indices_access(Heterogeneity, IncomingTripIndices, IncomingHeterogeneity),
+    minimum(EarliestDeparture, IncomingTrips).
+
+maximum_heterogeneous([_ | Hs], [X | Xs], R) :-
+    maximum_heterogeneous(Hs, Xs, X, R).
+
+maximum_heterogeneous([], [], A, A).
+maximum_heterogeneous([H | Hs], [X | Xs], A, R) :-
+    H #<=> (X #> A #<=> Ri #= X),
+    (X #=< A) #<=> (Ri #= A),
+    (#\H) #=> (Ri #= A),
+    maximum_heterogeneous(Xs, Ri, R).
