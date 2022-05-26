@@ -13,7 +13,6 @@ calculate_cost(Data, Plans, Cost) :-
     Cost #= UsefulTime / TotalCost.
 
 % Returns the number of seconds all of the students will be in the destination.
-% TODO: consider homogeneous trips.
 calculate_useful_time(Data, Plans, UsefulTime) :-
     calculate_last_arrival(Data, Plans, LastArrival),
     calculate_earliest_departure(Data, Plans, EarliestDeparture),
@@ -30,7 +29,6 @@ calculate_individual_costs(Data, Plans, IndividualCosts) :-
     sum_elements(IndividualOutgoingCosts, IndividualIncomingCosts, IndividualCosts).
 
 % Returns a list with the alone times for each student.
-% TODO: consider homogeneous trips.
 calculate_alone_times(Data, Plans, AloneTimes) :-
     data_trips(Data, Trips),
     calculate_last_arrival(Data, Plans, LastArrival),
@@ -54,14 +52,31 @@ calculate_earliest_departure(Data, Plans, EarliestDeparture) :-
     map(plan_incoming_trip, Plans, IncomingTripIndices),
     indices_access(TripDepartures, IncomingTripIndices, IncomingTrips),
     indices_access(Heterogeneity, IncomingTripIndices, IncomingHeterogeneity),
-    minimum(EarliestDeparture, IncomingTrips).
+    minimum_heterogeneous(IncomingHeterogeneity, IncomingTrips, EarliestDeparture).
 
-maximum_heterogeneous([_ | Hs], [X | Xs], R) :-
-    maximum_heterogeneous(Hs, Xs, X, R).
+maximum_heterogeneous([H | Hs], [X | Xs], R) :-
+    Ri #= X * H,
+    maximum_heterogeneous(Hs, Xs, Ri, R).
 
 maximum_heterogeneous([], [], A, A).
 maximum_heterogeneous([H | Hs], [X | Xs], A, R) :-
-    H #<=> (X #> A #<=> Ri #= X),
-    (X #=< A) #<=> (Ri #= A),
-    (#\H) #=> (Ri #= A),
-    maximum_heterogeneous(Xs, Ri, R).
+    H #=> (
+        (X #> A #=> Ri #= X)
+        #/\ (X #=< A #=> Ri #= A)
+    ),
+    #\H #=> (Ri #= A),
+    maximum_heterogeneous(Hs, Xs, Ri, R).
+
+minimum_heterogeneous([H | Hs], [X | Xs], R) :-
+    H #=> Ri #= X,
+    #\H #=> Ri #= 999999,
+    minimum_heterogeneous(Hs, Xs, Ri, R).
+
+minimum_heterogeneous([], [], A, A).
+minimum_heterogeneous([H | Hs], [X | Xs], A, R) :-
+    H #=> (
+        (X #< A #=> Ri #= X)
+        #/\ (X #>= A #=> Ri #= A)
+    ),
+    #\H #=> (Ri #= A),
+    minimum_heterogeneous(Hs, Xs, Ri, R).
