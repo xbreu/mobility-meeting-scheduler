@@ -202,7 +202,9 @@ for i in range(len(students)):
 
     model.Add(students_cost[i] == sum(flights_cost_for_students))
 
-model.Minimize(sum(students_cost))
+total_cost = sum(students_cost)
+model.Minimize(total_cost)
+model.Minimize(students_cost[0])
 
 solver = cp_model.CpSolver()
 status = solver.Solve(model)
@@ -217,4 +219,4 @@ if status == cp_model.OPTIMAL or status == cp_model.FEASIBLE:
         if value != 0:
             print(f'{flights[i]} : {value} : {i}')
     
-    print(f'total_cost: {sum([solver.Value(cost) for cost in students_cost])}')
+    print(f'total_cost: {solver.Value(total_cost)}')
