@@ -2,7 +2,10 @@
     "students": [
         {
             "city": "budapest",
-            "availability": [["05/05/2022", "11/05/2022"]],
+            "availability": [
+                ["06/05/2022", "11/05/2022"],
+                ["15/05/2022", "30/05/2022"]
+            ],
             "maxConnections": 1,
             "maxDuration": 600,
             "earliestDeparture": "05:30:00",
@@ -10,7 +13,10 @@
         },
         {
             "city": "zagreb",
-            "availability": [["05/05/2022", "11/05/2022"]],
+            "availability": [
+                ["06/05/2022", "11/05/2022"],
+                ["15/05/2022", "30/05/2022"]
+            ],
             "maxConnections": 1,
             "maxDuration": 600,
             "earliestDeparture": "05:30:00",
@@ -18,7 +24,10 @@
         },
         {
             "city": "wien",
-            "availability": [["05/05/2022", "11/05/2022"]],
+            "availability": [
+                ["06/05/2022", "11/05/2022"],
+                ["15/05/2022", "30/05/2022"]
+            ],
             "maxConnections": 1,
             "maxDuration": 600,
             "earliestDeparture": "05:30:00",
