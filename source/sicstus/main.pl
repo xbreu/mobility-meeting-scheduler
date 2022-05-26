@@ -15,7 +15,8 @@ main :-
     flatten(Plans, Variables),
     print(Variables), nl,
     labeling([], Variables),
-    print_plans(Data, Plans).
+    print_plans(Data, Plans),
+    print_statistics.
 
 print_elements([]) :- !.
 print_elements([H | T]) :-
@@ -32,3 +33,8 @@ print_plans(Data, I, [P | Ps]) :-
 
 print_plans(D, Ps) :-
     print_plans(D, 1, Ps).
+
+print_statistics :-
+    format('~n---------------------------------------------------------------------~n~n', []),
+    statistics,
+    fd_statistics.
