@@ -230,16 +230,21 @@ separated_times = [model.NewIntVar(0, 99999999999999, 'separated_time_'+str(i)) 
 for i in range(len(students)):
     model.Add(separated_times[i] == (incoming_times[i] - last_incoming) + (outgoing_times[i] - first_outgoing))
 
+time_waiting = model.NewIntVar(0, 99999999999999, 'time_waiting')
+model.Add(time_waiting == sum(separated_times))
 
+function = model.NewIntVar(-99999999999999, 99999999999999, 'cost_function')
+model.Add(function == 10*total_cost + useful_time - time_waiting)
+model.Minimize(function)
 # model.Minimize(sum(separated_times))
-# # model.Maximize(useful_time)
-# # model.Minimize(total_cost)
+# model.Maximize(useful_time)
+# model.Minimize(total_cost)
 # model.Minimize(students_cost[0])
 
 
 solver = cp_model.CpSolver()
 status = solver.Solve(model)
-# print(solver._CpSolver__solution)
+print(solver._CpSolver__solution)
 # print("status: " + solver.StatusName())
 # print("wallTime: " + str(solver.WallTime()))
 # print("userTime: " + str(solver.UserTime()))
@@ -249,15 +254,15 @@ if status == cp_model.OPTIMAL or status == cp_model.FEASIBLE:
         value = solver.Value(output_flights[i])
         if value != 0:
             print(f'{flights[i]} : {value} : {i}')
-    print(f'total_cost: {solver.Value(total_cost)}')
-    print(f'last_outgoing: {solver.Value(last_outgoing)}')
-    print(f'first_incoming: {solver.Value(first_incoming)}')
+    print(f'Total Cost: {solver.Value(total_cost)}')
+    print(f'Useful Time: {solver.Value(useful_time)}')
+    print(f'Time Waiting: {solver.Value(sum(separated_times))}')
     for i in range(len(students)):
         print('Student ' + str(i) + ':')
         if (solver.Value(students_cost[i]) != 0):
             print(f'\tCost = {str(solver.Value(students_cost[i]))}')
-            print(f'\tIncoming_Time = {datetime.fromtimestamp(solver.Value(incoming_times[i]))}')
-            print(f'\tOutgoing_Time = {datetime.fromtimestamp(solver.Value(outgoing_times[i]))}')
-            print(f'\tSeparated_Time = {str(int(solver.Value(separated_times[i]) / 60))} mins')
+            print(f'\tIncoming Time = {datetime.fromtimestamp(solver.Value(incoming_times[i]))}')
+            print(f'\tOutgoing Time = {datetime.fromtimestamp(solver.Value(outgoing_times[i]))}')
+            print(f'\tSeparated Time = {str(int(solver.Value(separated_times[i]) / 60))} mins')
         else:
             print('\tNo needed flights')
