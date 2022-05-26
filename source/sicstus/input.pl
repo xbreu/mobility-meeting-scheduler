@@ -154,7 +154,8 @@ json_to_destination(Locations, Name, Destination) :-
 % Program input
 % -----------------------------------------------------------------------------
 
-read_data(data(Trips, Destinations, Students, MinimumUsefulTime, Locations)) :-
+read_data(data(Trips, Destinations, Students, MinimumUsefulTime, Locations,
+               HeterogeneousTripsSize)) :-
     read_flights_json(Jf),
     setof(Location, Trip^Attribute^(
         member(Trip, Jf),
@@ -167,6 +168,7 @@ read_data(data(Trips, Destinations, Students, MinimumUsefulTime, Locations)) :-
     object_attribute_value(Js, destinations, Ds),
     json_to_list_of_destinations(Locations, Ds, Destinations),
     json_to_list_of_trips(Locations, Jf, HeterogeneousTrips),
+    length(HeterogeneousTrips, HeterogeneousTripsSize),
     add_homogeneous_trips(HeterogeneousTrips, Locations, Trips),
     json_to_list_of_students(Locations, Ss, Students).
 

@@ -15,7 +15,8 @@ restrict_hard_constraints(Data, Plans) :-
     restrict_max_connections(Data, Plans),
     restrict_earliest_departures(Data, Plans),
     restrict_latest_arrivals(Data, Plans),
-    restrict_minimum_useful_time(Data, Plans).
+    restrict_minimum_useful_time(Data, Plans),
+    restrict_availabilities(Data, Plans).
 
 % The outgoing trip of each student must start in its current city, and the
 % same is true for the end of the incoming trip.
@@ -152,14 +153,56 @@ restrict_latest_arrivals(Hs, Ms, Ss, [Latest | Tail], [Plan | Plans]) :-
     restrict_earlier_time(time(TripH, TripM, TripS), Latest),
     restrict_latest_arrivals(Hs, Ms, Ss, Tail, Plans).
 
-% Every student needs the trip to take place entirely within its available
-% days.
-
-% TODO
-
 % The time all the students will spend together needs to be larger than the
 % provided minimum useful time
 restrict_minimum_useful_time(Data, Plans) :-
     data_minimum_useful_time(Data, MinimumUsefulTime),
     calculate_useful_time(Data, Plans, Time),
     Time #>= MinimumUsefulTime * 60.
+
+% Every student needs the trip to take place entirely within its available
+% days.
+
+restrict_availabilities(Data, Plans) :-
+    % Get the list of dates of departures and arrivals.
+    data_trips(Data, Trips),
+    map(trip_departure_date, Trips, TripDepartureDates),
+    map(trip_arrival_date, Trips, TripArrivalDates),
+    map(date_to_days, TripDepartureDates, TripDepartures),
+    map(date_to_days, TripArrivalDates, TripArrivals),
+    % Get the availability of the students
+    data_students(Data, Students),
+    map(student_availability, Students, Availabilities),
+    data_number_of_heterogeneous_trips(Data, HTSize),
+    restrict_availabilities(TripDepartures, TripArrivals, Availabilities, Plans, HTSize).
+
+restrict_availabilities(_, _, [], [], _).
+restrict_availabilities(Departures, Arrivals, [A | As], [P | Ps], H) :-
+    plan_outgoing_trip(P, To),
+    plan_incoming_trip(P, Ti),
+
+    % If the trip is a dummy one, the student is already in the city
+    (To #> H) #<=> Homogeneous,
+
+    % Get the dates of the trips
+    element(To, Departures, Departure),
+    element(Ti, Arrivals, Arrival),
+
+    % Get the dates of the availability
+    map_map(date_to_days, A, Availability),
+
+    % Calculate the number of intervals where the trip falls within
+    get_withins(Departure, Availability, Withins),
+    sum(Withins, #=, NumberOfIntervals),
+
+    Homogeneous #\/ (NumberOfIntervals #>= 1),
+
+    restrict_availabilities(Departures, Arrivals, As, Ps, H).
+
+get_withins(_, [], []).
+get_withins(D, [[S, E] | As], [R | Rs]) :-
+    in_interval(S, E, D, R),
+    get_withins(D, As, Rs).
+
+in_interval(S, E, D, R) :-
+    (D #>= S #/\ D #=< E) #<=> R.

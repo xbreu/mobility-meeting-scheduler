@@ -1,3 +1,4 @@
+:- use_module(library(clpfd)).
 :- consult('./data/plan.pl').
 :- consult('./input.pl').
 :- consult('./restrictions.pl').
@@ -13,10 +14,9 @@ main :-
 
     % Label and Output
     flatten(Plans, Variables),
-    print(Variables), nl,
     labeling([], Variables),
     print_plans(Data, Plans),
-    print_statistics.
+    restrict_availabilities(Data, Plans).
 
 print_elements([]) :- !.
 print_elements([H | T]) :-
