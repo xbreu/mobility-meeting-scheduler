@@ -16,7 +16,7 @@ main :-
     flatten(Plans, Variables),
     labeling([], Variables),
     print_plans(Data, Plans),
-    restrict_availabilities(Data, Plans).
+    calculate_cost(Data, Plans, _).
 
 print_elements([]) :- !.
 print_elements([H | T]) :-
