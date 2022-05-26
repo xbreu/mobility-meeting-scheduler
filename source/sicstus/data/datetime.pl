@@ -37,6 +37,9 @@ date_year(date(Y, _, _), Y).
 date_month(date(_, M, _), M).
 date_day(date(_, _, D), D).
 
+date_to_days(date(Y, M, D), N) :-
+    N #= D + 31 * (M + 12 * Y).
+
 earlier_date(date(Y1, M1, D1), date(Y2, M2, D2), date(Y1, M1, D1)) :-
     (
         (
@@ -97,6 +100,9 @@ time_hours(time(H, _, _), H).
 time_minutes(time(_, M, _), M).
 time_seconds(time(_, _, S), S).
 
+time_to_seconds(time(H, M, S), N) :-
+    N #= S + 60 * (M + 60 * H).
+
 earlier_hour(time(H1, M1, S1), time(H2, M2, S2), time(H1, M1, S1)) :-
     (
         (
@@ -148,6 +154,11 @@ datetime_hours(datetime(_, time(H, _, _)), H).
 datetime_minutes(datetime(_, time(_, M, _)), M).
 datetime_seconds(datetime(_, time(_, _, S)), S).
 
+datetime_to_seconds(datetime(D, T), N) :-
+    date_to_days(D, Nd),
+    time_to_seconds(T, Nt),
+    N #= Nt + 86400 * Nd.
+
 earlier_datetime(datetime(D1, T1), datetime(D2, T2), datetime(D1, T1)) :-
     (
         (
@@ -179,10 +190,16 @@ extreme_datetimes([H | T], AMin, AMax, Min, Max) :-
     later_datetime(AMax, H, IMax),
     extreme_datetimes(T, IMin, IMax, Min, Max).
 
+earliest_datetime([H | T], R) :-
+    earliest_datetime(T, H, R).
+
 earliest_datetime([], A, A).
 earliest_datetime([H | T], A, R) :-
     earlier_datetime(A, H, I),
     earliest_datetime(T, I, R).
+
+latest_datetime([H | T], R) :-
+    latest_datetime(T, H, R).
 
 latest_datetime([], A, A).
 latest_datetime([H | T], A, R) :-

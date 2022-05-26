@@ -1,4 +1,5 @@
 :- use_module(library(clpfd)).
+:- consult('./cost.pl').
 :- consult('./data/data.pl').
 :- consult('./data/plan.pl').
 :- consult('./data/student.pl').
@@ -13,7 +14,8 @@ restrict_hard_constraints(Data, Plans) :-
     restrict_max_durations(Data, Plans),
     restrict_max_connections(Data, Plans),
     restrict_earliest_departures(Data, Plans),
-    restrict_latest_arrivals(Data, Plans).
+    restrict_latest_arrivals(Data, Plans),
+    restrict_minimum_useful_time(Data, Plans).
 
 % The outgoing trip of each student must start in its current city, and the
 % same is true for the end of the incoming trip.
@@ -157,5 +159,7 @@ restrict_latest_arrivals(Hs, Ms, Ss, [Latest | Tail], [Plan | Plans]) :-
 
 % The time all the students will spend together needs to be larger than the
 % provided minimum useful time
-
-% TODO
+restrict_minimum_useful_time(Data, Plans) :-
+    data_minimum_useful_time(Data, MinimumUsefulTime),
+    calculate_useful_time(Data, Plans, Time),
+    Time #>= MinimumUsefulTime * 60.
