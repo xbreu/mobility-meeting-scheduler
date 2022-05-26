@@ -30,12 +30,12 @@ trip_arrival_time(Trip, Hour) :-
     trip_arrival(Trip, Arrival),
     datetime_time(Arrival, Hour).
 
-trip_homogeneous(Trip, 1) :-
-    trip_origin(Trip, X),
-    trip_destination(Trip, X), !.
-trip_homogeneous(Trip, 0).
+trip_homogeneous(Trip, H) :-
+    trip_origin(Trip, O),
+    trip_destination(Trip, D),
+    O #= D #<=> H.
 
-trip_heterogeneous(Trip, 0) :-
-    trip_origin(Trip, X),
-    trip_destination(Trip, X), !.
-trip_heterogeneous(Trip, 1).
+trip_heterogeneous(Trip, H) :-
+    trip_origin(Trip, O),
+    trip_destination(Trip, D),
+    O #\= D #<=> H.
