@@ -73,21 +73,21 @@ later_date(_, D, D).
 predecessor_date(date(Y, M, D), date(Y, M, Dr)) :-
     D > 2, !,
     Dr is D - 1.
-predecessor_date(date(Y, M, D), date(Y, Mr, Dr)) :-
+predecessor_date(date(Y, M, _), date(Y, Mr, Dr)) :-
     M > 2, !,
     Mr is M - 1,
     days_month(Y, Mr, Dr).
-predecessor_date(date(Y, M, D), date(Yr, 12, 31)) :-
+predecessor_date(date(Y, _, _), date(Yr, 12, 31)) :-
     Yr is Y - 1.
 
 successor_date(date(Y, M, D), date(Y, M, Dr)) :-
     days_month(Y, M, Dm),
     D < Dm - 1, !,
     Dr is D + 1.
-successor_date(date(Y, M, D), date(Y, Mr, 1)) :-
+successor_date(date(Y, M, _), date(Y, Mr, 1)) :-
     M < 12, !,
     Mr is M + 1.
-successor_date(date(Y, M, D), date(Yr, 1, 1)) :-
+successor_date(date(Y, _, _), date(Yr, 1, 1)) :-
     Yr is Y + 1.
 
 % -----------------------------------------------------------------------------

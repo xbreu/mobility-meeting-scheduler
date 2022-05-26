@@ -29,6 +29,18 @@ map(F, [X | Xs], A, R) :-
     append(A, [Y], An),
     map(F, Xs, An, R).
 
+map_map(F, Xs, R) :-
+    map_map(F, Xs, [], R).
+
+double(X, Y) :-
+    Y is X * 2.
+
+map_map(_, [], A, A).
+map_map(F, [X | Xs], A, R) :-
+    map(F, X, Y),
+    append(A, [Y], An),
+    map_map(F, Xs, An, R).
+
 % New constraint, elements in List, accessed by each index in Indices result
 % in the list Values.
 % index_access(List, Indices, Values)
