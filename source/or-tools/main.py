@@ -106,7 +106,6 @@ for i in range(len(flights)):
         departure_during_availability = False
         arrival_during_availability = False
         for [d1, d2] in students[j].availability:
-            # TODO: Create bool to verify if its inside at least one interval
             # departure during availability
             if (flights[i].departure.date() < d1.date()
                     or flights[i].departure.date() > d2.date()):
@@ -164,11 +163,8 @@ for i in range(len(flights)):
         if (flights[i].arrival < flights[j].departure):
             # If minimum time is not respected
             if (flights[j].departure - flights[i].arrival).total_seconds() < minimum_time*60:
-                # Both flights cannot be of the same student
-                used_flight = model.NewBoolVar(f'used_flight_{str(i)}')
-                model.Add(output_flights[i] != 0).OnlyEnforceIf(used_flight)
-                model.Add(output_flights[i] == 0).OnlyEnforceIf(used_flight.Not())
-                model.Add(output_flights[i] != output_flights[j]).OnlyEnforceIf(same_person_flights, used_flight)
+                
+                model.Add(output_flights[i] == 0).OnlyEnforceIf(same_person_flights)
             else:
                 # Flight i must be positive and flight j negative, or both 0
                 model.Add(output_flights[i] >= output_flights[j]).OnlyEnforceIf(same_person_flights)
@@ -176,35 +172,37 @@ for i in range(len(flights)):
         elif (flights[j].arrival < flights[i].departure):
             # If minimum time is not respected
             if (flights[i].departure - flights[j].arrival).total_seconds() < minimum_time*60:
-                # Both flights cannot be of the same student
-                used_flight = model.NewBoolVar(f'used_flight_{str(i)}')
-                model.Add(output_flights[i] != 0).OnlyEnforceIf(used_flight)
-                model.Add(output_flights[i] == 0).OnlyEnforceIf(used_flight.Not())
-                model.Add(output_flights[i] != output_flights[j]).OnlyEnforceIf(same_person_flights, used_flight)
+                model.Add(output_flights[i] == 0).OnlyEnforceIf(same_person_flights)
             else:
                 # Flight i must be negative and flight j positive, or both 0
                 model.Add(output_flights[i] <= output_flights[j]).OnlyEnforceIf(same_person_flights)
+        else:
+            model.Add(output_flights[i] == 0).OnlyEnforceIf(same_person_flights)
 
-# students_cost = [model.NewIntVar(
-#     0, 99999, 'student_cost_'+str(i))for i in range(len(students))]
-# for i in range(len(students)):
-#     flights_cost_for_students = [model.NewIntVar(
-#         0, 99999, 'flight_cost_for_' + str(i) + '-'+str(j)) for j in range(len(flights))]
-#     for j in range(len(flights)):
-#         outgoing = i+1
-#         incoming = -i-1
+students_cost = [model.NewIntVar(
+    0, 99999, 'student_cost_'+str(i))for i in range(len(students))]
+for i in range(len(students)):
+    flights_cost_for_students = [model.NewIntVar(
+        0, 99999, 'flight_cost_for_' + str(i) + '-'+str(j)) for j in range(len(flights))]
+    for j in range(len(flights)):
+        outgoing = i+1
+        incoming = -i-1
 
-#         b = model.NewBoolVar('b')
-#         model.Add(output_flights[j] == outgoing or output_flights[j] == incoming).OnlyEnforceIf(b)
-#         model.Add(
-#             output_flights[j] != outgoing and output_flights[j] != incoming).OnlyEnforceIf(b.Not())
-#         model.Add(flights_cost_for_students[j]
-#                   == flights[j].price).OnlyEnforceIf(b)
-#         model.Add(flights_cost_for_students[j] == 0).OnlyEnforceIf(b.Not())
+        outgoing_flight = model.NewBoolVar(f'outgoing_flight_{str(i)}-{str(j)}')
+        incoming_flight = model.NewBoolVar(f'incoming_flight_{str(i)}-{str(j)}')
+        student_paying_flight = model.NewBoolVar(f'paying_flight_{str(i)}-{str(j)}')
+        model.Add(output_flights[j] == outgoing).OnlyEnforceIf(outgoing_flight)
+        model.Add(output_flights[j] != outgoing).OnlyEnforceIf(outgoing_flight.Not())
+        model.Add(output_flights[j] == incoming).OnlyEnforceIf(incoming_flight)
+        model.Add(output_flights[j] != incoming).OnlyEnforceIf(incoming_flight.Not())
+        model.Add(flights_cost_for_students[j] == 0).OnlyEnforceIf(outgoing_flight.Not(), incoming_flight.Not())
+        model.Add(flights_cost_for_students[j] == flights[j].price).OnlyEnforceIf(incoming_flight, outgoing_flight)
+        model.Add(flights_cost_for_students[j] == flights[j].price).OnlyEnforceIf(incoming_flight.Not(), outgoing_flight)
+        model.Add(flights_cost_for_students[j] == flights[j].price).OnlyEnforceIf(incoming_flight, outgoing_flight.Not())
 
-#     model.Add(students_cost[i] == sum(flights_cost_for_students))
+    model.Add(students_cost[i] == sum(flights_cost_for_students))
 
-# model.Minimize(sum(students_cost))
+model.Minimize(sum(students_cost))
 
 solver = cp_model.CpSolver()
 status = solver.Solve(model)
@@ -218,3 +216,5 @@ if status == cp_model.OPTIMAL or status == cp_model.FEASIBLE:
         value = solver.Value(output_flights[i])
         if value != 0:
             print(f'{flights[i]} : {value} : {i}')
+    
+    print(f'total_cost: {sum([solver.Value(cost) for cost in students_cost])}')
