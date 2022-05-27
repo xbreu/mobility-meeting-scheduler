@@ -5,14 +5,15 @@
 :- consult('./utils.pl').
 
 main :-
-    % Variable Creation
+    % Variable creation
     read_data(Data),
     create_plans(Data, Plans),
 
+    % Constraints and cost calculation
     restrict_hard_constraints(Data, Plans),
     calculate_cost(Data, Plans, Cost),
 
-    % Label and Output
+    % Label and output
     flatten(Plans, Variables),
     labeling([minimize(Cost)], Variables),
     print_plans(Data, Plans).
