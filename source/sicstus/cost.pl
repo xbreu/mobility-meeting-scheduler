@@ -7,8 +7,8 @@
 
 calculate_cost(Data, Plans, Cost) :-
     calculate_useful_time(Data, Plans, UsefulTime),
+    % calculate_alone_times(Data, Plans, AloneTimes),
     calculate_individual_costs(Data, Plans, IndividualCosts),
-    calculate_alone_times(Data, Plans, AloneTimes),
     sum(IndividualCosts, #=, TotalCost),
     Cost #= UsefulTime / TotalCost.
 
@@ -36,16 +36,18 @@ calculate_alone_times(Data, Plans, AloneTimes) :-
 
 % Returns the arrival of the last person.
 calculate_last_arrival(Data, Plans, LastArrival) :-
+    data_trips(Data, Trips),
     map(trip_arrival, Trips, TripArrivalsI),
     map(datetime_to_seconds, TripArrivalsI, TripArrivals),
     map(trip_heterogeneous, Trips, Heterogeneity),
     map(plan_outgoing_trip, Plans, OutgoingTripIndices),
     indices_access(TripArrivals, OutgoingTripIndices, OutgoingTrips),
-    indices_access(Heterogeneity, IncomingTripIndices, OutgoingHeterogeneity),
+    indices_access(Heterogeneity, OutgoingTripIndices, OutgoingHeterogeneity),
     maximum_heterogeneous(OutgoingHeterogeneity, OutgoingTrips, LastArrival).
 
 % Returns the departure of the first person.
 calculate_earliest_departure(Data, Plans, EarliestDeparture) :-
+    data_trips(Data, Trips),
     map(trip_departure, Trips, TripDeparturesI),
     map(datetime_to_seconds, TripDeparturesI, TripDepartures),
     map(trip_heterogeneous, Trips, Heterogeneity),
