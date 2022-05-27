@@ -7,10 +7,13 @@
 
 calculate_cost(Data, Plans, Cost) :-
     calculate_useful_time(Data, Plans, UsefulTime),
-    % calculate_alone_times(Data, Plans, AloneTimes),
+    calculate_alone_times(Data, Plans, AloneTimes),
     calculate_individual_costs(Data, Plans, IndividualCosts),
+    length(Plans, Students),
+    sum(AloneTimes, #=, AloneTimesSum),
+    AloneTimesAverage #= AloneTimesSum / Students,
     sum(IndividualCosts, #=, TotalCost),
-    Cost #= UsefulTime / TotalCost.
+    Cost #= (1000000000 * TotalCost) / (100 * UsefulTime + AloneTimesAverage).
 
 % Returns the number of seconds all of the students will be in the destination.
 calculate_useful_time(Data, Plans, UsefulTime) :-
@@ -32,7 +35,32 @@ calculate_individual_costs(Data, Plans, IndividualCosts) :-
 calculate_alone_times(Data, Plans, AloneTimes) :-
     data_trips(Data, Trips),
     calculate_last_arrival(Data, Plans, LastArrival),
-    calculate_earliest_departure(Data, Plans, EarliestDeparture).
+    calculate_earliest_departure(Data, Plans, EarliestDeparture),
+    get_alone_times(Trips, Plans, LastArrival-EarliestDeparture, AloneTimes).
+
+get_alone_times(Trips, Plans, Start-End, Result) :-
+    map(trip_departure, Trips, TripDeparturesI),
+    map(trip_arrival, Trips, TripArrivalsI),
+    map(datetime_to_seconds, TripDeparturesI, TripDepartures),
+    map(datetime_to_seconds, TripArrivalsI, TripArrivals),
+    map(trip_homogeneous, Trips, Hs),
+    get_alone_times(TripDepartures-TripArrivals-Hs, Plans, Start-End, [], Result).
+
+get_alone_times(_, [], _, Acc, Acc).
+get_alone_times(Departures-Arrivals-Hs, [Plan | Plans], Start-End, Acc, Result) :-
+    plan_outgoing_trip(Plan, Toi),
+    plan_incoming_trip(Plan, Tii),
+    element(Toi, Arrivals, Arrival),
+    element(Tii, Departures, Departure),
+    element(Toi, Hs, Homogeneous),
+    Homogeneous #=> (
+        AloneTime #= 0
+    ),
+    #\Homogeneous #=> (
+        AloneTime #= (Start - Arrival) + (Departure - End)
+    ),
+    append(Acc, [AloneTime], AccI),
+    get_alone_times(Departures-Arrivals-Hs, Plans, Start-End, AccI, Result).
 
 % Returns the arrival of the last person.
 calculate_last_arrival(Data, Plans, LastArrival) :-
