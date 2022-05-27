@@ -165,7 +165,7 @@ earlier_datetime(datetime(D1, T1), datetime(D2, T2), datetime(D1, T1)) :-
             earlier_date(D1, D2, D1)
         ); (
             D1 = D2,
-            earlier_hour(H1, H2, H1)
+            earlier_hour(HT, T2, T1)
         )
     ), !.
 earlier_datetime(_, D, D).
@@ -176,7 +176,7 @@ later_datetime(datetime(D1, T1), datetime(D2, T2), datetime(D1, T1)) :-
             later_date(D1, D2, D1)
         ); (
             D1 = D2,
-            later_hour(H1, H2, H1)
+            later_hour(T1, T2, T1)
         )
     ), !.
 later_datetime(_, D, D).

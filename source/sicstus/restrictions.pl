@@ -192,7 +192,7 @@ restrict_availabilities(Departures, Arrivals, [A | As], [P | Ps], H) :-
     map_map(date_to_days, A, Availability),
 
     % Calculate the number of intervals where the trip falls within
-    get_withins(Departure, Availability, Withins),
+    get_withins(Departure-Arrival, Availability, Withins),
     sum(Withins, #=, NumberOfIntervals),
 
     Homogeneous #\/ (NumberOfIntervals #>= 1),
@@ -200,9 +200,11 @@ restrict_availabilities(Departures, Arrivals, [A | As], [P | Ps], H) :-
     restrict_availabilities(Departures, Arrivals, As, Ps, H).
 
 get_withins(_, [], []).
-get_withins(D, [[S, E] | As], [R | Rs]) :-
-    in_interval(S, E, D, R),
-    get_withins(D, As, Rs).
+get_withins(D-A, [[S, E] | As], [R | Rs]) :-
+    in_interval(S, E, D, R1),
+    in_interval(S, E, A, R2),
+    R #= R1 * R2,
+    get_withins(D-A, As, Rs).
 
 in_interval(S, E, D, R) :-
     (D #>= S #/\ D #=< E) #<=> R.

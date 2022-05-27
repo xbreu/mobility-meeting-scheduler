@@ -9,14 +9,13 @@ main :-
     read_data(Data),
     create_plans(Data, Plans),
 
-    % Hard Constraints
     restrict_hard_constraints(Data, Plans),
+    calculate_cost(Data, Plans, Cost),
 
     % Label and Output
     flatten(Plans, Variables),
-    labeling([], Variables),
-    print_plans(Data, Plans),
-    calculate_cost(Data, Plans, _).
+    labeling([minimize(Cost)], Variables),
+    print_plans(Data, Plans).
 
 print_elements([]) :- !.
 print_elements([H | T]) :-
