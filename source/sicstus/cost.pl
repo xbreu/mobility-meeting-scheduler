@@ -6,6 +6,9 @@
 :- consult('./utils.pl').
 
 calculate_cost(Data, Plans, Cost) :-
+    calculate_cost(Data, Plans, Cost, _, _, _).
+
+calculate_cost(Data, Plans, Cost, TotalCost, UsefulTime, AloneTimesAverage) :-
     calculate_useful_time(Data, Plans, UsefulTime),
     calculate_alone_times(Data, Plans, AloneTimes),
     calculate_individual_costs(Data, Plans, IndividualCosts),
@@ -13,7 +16,7 @@ calculate_cost(Data, Plans, Cost) :-
     sum(AloneTimes, #=, AloneTimesSum),
     AloneTimesAverage #= AloneTimesSum / Students,
     sum(IndividualCosts, #=, TotalCost),
-    Cost #= (1000000000 * TotalCost) / (100 * UsefulTime + AloneTimesAverage).
+    Cost #= (2592000 * TotalCost) / (100 * UsefulTime - AloneTimesAverage).
 
 % Returns the number of seconds all of the students will be in the destination.
 calculate_useful_time(Data, Plans, UsefulTime) :-
