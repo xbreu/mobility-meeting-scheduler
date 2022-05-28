@@ -1,4 +1,5 @@
 :- use_module(library(clpfd)).
+:- use_module(library(list)).
 :- consult('./data/plan.pl').
 :- consult('./input.pl').
 :- consult('./restrictions.pl').
@@ -21,6 +22,14 @@ main :-
     print_plans(Data, Plans),
     format('\x2570\~12c\x2534\~14c\x2534\~14c\x256F\~n', ["\x2500\", "\x2500\", "\x2500\"]),
     format('~nType: ~p~n', [Result]),
+    nth1(1, Plans, Plan1),
+    plan_outgoing_trip(Plan1, TripI),
+    data_trips(Data, Trips),
+    nth1(TripI, Trips, Trip),
+    trip_destination(Trip, LocationI),
+    data_locations(Data, Locations),
+    nth1(LocationI, Locations, Destination),
+    format('Destination: ~p~n', [Destination]),
     format('Cost: ~d~n', [Cost]),
     format('Total price: ~d \x20AC\~n', [TotalCost]),
     UsefulTimeHours is (UsefulTime // 3600) mod 24,
