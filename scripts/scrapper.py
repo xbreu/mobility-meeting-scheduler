@@ -1,4 +1,3 @@
-import traceback
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -9,10 +8,10 @@ import time
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 
-NUM_DAYS = 5
+NUM_DAYS = 30
 
-ORIGINS = ['Budapest', 'Zagreb']
-DESTINATIONS = ORIGINS + ['Wien']
+ORIGINS = ['Budapest', 'Zagreb', 'Milano', 'Wien', 'Krakow']
+DESTINATIONS = ORIGINS + ['Rome', 'Paris']
 
 def try_x_times(x, time_between_tries, function, *args):
     i = 0
@@ -78,22 +77,22 @@ def parse_duration(string):
     return duration
 
 def get_flight_info(origin, destination, date):
-    best_flights = driver.find_element(By.XPATH, '//h3[contains(text(), "Best flights")]/../../../..')
+    best_flights = driver.find_element(By.XPATH, '//h3[contains(text(), "Best ")]/../../../..')
     departure_times = best_flights.find_elements(By.XPATH, './/span[starts-with(@aria-label, "Departure time")]')
     arrival_times = best_flights.find_elements(By.XPATH, './/span[starts-with(@aria-label, "Arrival time")]')
     durations = best_flights.find_elements(By.XPATH, './/div[starts-with(@aria-label, "Total duration")]')
     prices = best_flights.find_elements(By.XPATH, './/span[contains(@aria-label, "euros")]')
-    stops = best_flights.find_elements(By.XPATH, './/span[starts-with(@aria-label, "Nonstop flight.")]|.//span[contains(@aria-label, "stop flight.")]|.//span[contains(@aria-label, "stops flight.")]')
+    stops = best_flights.find_elements(By.XPATH, './/span[starts-with(@aria-label, "Nonstop") or starts-with(@aria-label, "Direct") or contains(@aria-label, "stop")]')
 
     flights = []
     for i in range(len(durations)):
-        departure = datetime.strptime('2022 ' + date + ' ' + departure_times[(i+1)*2-2].text, "%Y %d/%m %I:%M %p")
+        departure = datetime.strptime('2022 ' + date + ' ' + departure_times[(i+1)*2-2].text, "%Y %m/%d %I:%M %p")
         if '+1' in arrival_times[(i+1)*2-2].text: # If it has +1 it means arrival is on the next day
-            arrival = datetime.strptime('2022 ' + date + ' ' + arrival_times[(i+1)*2-2].text[:-2], "%Y %d/%m %I:%M %p") + timedelta(days=1)
+            arrival = datetime.strptime('2022 ' + date + ' ' + arrival_times[(i+1)*2-2].text[:-2], "%Y %m/%d %I:%M %p") + timedelta(days=1)
         elif '+' in arrival_times[(i+1)*2-2].text:
             continue
         else:
-            arrival = datetime.strptime('2022 ' + date + ' ' + arrival_times[(i+1)*2-2].text, "%Y %d/%m %I:%M %p")
+            arrival = datetime.strptime('2022 ' + date + ' ' + arrival_times[(i+1)*2-2].text, "%Y %m/%d %I:%M %p")
 
 
 
@@ -104,7 +103,7 @@ def get_flight_info(origin, destination, date):
             "arrival": arrival.strftime('%d/%m/%Y, %H:%M:%S %z'),
             "duration": parse_duration(durations[i].text),
             "price": prices[(i+1)*3-3].text[1:], # Price appears 3 times on page (2 are empty strings)
-            "stops": 0 if stops[i].text == "Nonstop" else int(stops[i].text[0])
+            "stops": 0 if stops[i].text == "Nonstop" or stops[i].text == "Direct" else int(stops[i].text[0])
         })
 
     return flights
@@ -114,13 +113,12 @@ def get_flight_info(origin, destination, date):
 def find_flights(origin, destination):
     driver.get("https://www.google.com/travel/flights")
     time.sleep(1)
-    date = '5/5'
-    date = datetime(2022, 5, 5)
+    date = datetime(2022, 6, 1)
     end_date = date + timedelta(days=NUM_DAYS)
-    input_fields(origin, destination, date.strftime('%-d/%-m'))
+    input_fields(origin, destination, date.strftime('%-m/%-d'))
     flights = []
     while(date != end_date):
-        flights += try_x_times(5, 3, get_flight_info, origin, destination, date.strftime('%-d/%-m'))
+        flights += try_x_times(5, 3, get_flight_info, origin, destination, date.strftime('%-m/%-d'))
         driver.find_element(By.XPATH, '//button[@data-delta="1"]').click() # Next day arrow
         date += timedelta(days=1)
         time.sleep(1)
@@ -128,7 +126,6 @@ def find_flights(origin, destination):
     return flights
 
 def write_flights(flights):
-    print(flights)
     flights_json = json.dumps(flights, indent = 4)[1:-2]
     if ORIGINS: flights_json = flights_json + ","
     FILE.write(flights_json)
@@ -148,15 +145,16 @@ driver.find_element(By.ID, 'L2AGLb').click()
 
 
 for origin in ORIGINS:
-    flights = []
     for destination in DESTINATIONS:
-        print(origin, destination)
         if origin == destination: continue
+        print(origin, destination)
+        flights = []
         flights += find_flights(origin, destination) # Search departure
         flights += find_flights(destination, origin) # Search return
+        write_flights(flights)
 
     DESTINATIONS.remove(origin)
-    write_flights(flights)
+    print("Finished flights for " + origin)
 
 driver.quit()
 
