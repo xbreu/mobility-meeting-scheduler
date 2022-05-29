@@ -158,7 +158,7 @@ restrict_latest_arrivals(Hs, Ms, Ss, [Latest | Tail], [Plan | Plans]) :-
 restrict_minimum_useful_time(Data, Plans) :-
     data_minimum_useful_time(Data, MinimumUsefulTime),
     calculate_useful_time(Data, Plans, Time),
-    Time #>= MinimumUsefulTime * 60.
+    Time #>= MinimumUsefulTime.
 
 % Every student needs the trip to take place entirely within its available
 % days.
