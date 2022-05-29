@@ -49,7 +49,7 @@ digits_to_number([H | T], A, N) :-
     digits_to_number(T, B, N).
 
 datetime(date(Y, M, D), time(Hs, Ms, Ss)) -->
-    date(Y, M, D), ", ", time(Hs, Ms, Ss), " ".
+    date(Y, M, D), ", ", time(Hs, Ms, Ss).
 
 date(Y, M, D) --> number(D), "/", number(M), "/", number(Y).
 
@@ -156,7 +156,7 @@ json_to_destination(Locations, Name, Destination) :-
 
 read_data(data(Trips, Destinations, Students, MinimumUsefulTime, Locations,
                HeterogeneousTripsSize)) :-
-    read_flights_json(Jf),
+    read_flights_json(Jf), !,
     setof(Location, Trip^Attribute^(
         member(Trip, Jf),
         member(Attribute, [origin, destination]),

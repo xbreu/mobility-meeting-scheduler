@@ -16,7 +16,7 @@ calculate_cost(Data, Plans, Cost, TotalCost, UsefulTime, AloneTimesAverage) :-
     sum(AloneTimes, #=, AloneTimesSum),
     AloneTimesAverage #= AloneTimesSum / Students,
     sum(IndividualCosts, #=, TotalCost),
-    Cost #= (2592000 * TotalCost) / (100 * UsefulTime - AloneTimesAverage).
+    Cost #= (2592000 * TotalCost) / UsefulTime.
 
 % Returns the number of seconds all of the students will be in the destination.
 calculate_useful_time(Data, Plans, UsefulTime) :-
