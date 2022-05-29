@@ -8,6 +8,9 @@
 calculate_cost(Data, Plans, Cost) :-
     calculate_cost(Data, Plans, Cost, _, _, _).
 
+calculate_cost(Data, Plans, Cost, TotalCost, UsefulTime) :-
+    calculate_cost(Data, Plans, Cost, TotalCost, UsefulTime, _).
+
 calculate_cost(Data, Plans, Cost, TotalCost, UsefulTime, AloneTimesAverage) :-
     calculate_useful_time(Data, Plans, UsefulTime),
     calculate_alone_times(Data, Plans, AloneTimes),

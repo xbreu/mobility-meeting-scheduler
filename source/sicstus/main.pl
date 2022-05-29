@@ -16,7 +16,7 @@ main :-
     format('Creating restrictions...', []),
     restrict_hard_constraints(Data, Plans),
     format('Done~nCalculating cost...', []),
-    calculate_cost(Data, Plans, Cost, TotalCost, UsefulTime, AloneTimesAverage),
+    calculate_cost(Data, Plans, Cost, TotalCost, UsefulTime),
     format('Done~n', []),
 
     % Label and output
