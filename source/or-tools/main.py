@@ -25,7 +25,7 @@ def count(model: cp_model.CpModel, vars, value):
     return sum(trues)
 
 
-f = open("../../data/flights.json")
+f = open("../../data/flights2.json")
 json_flights = json.load(f)
 
 f = open("../../data/students.json")
@@ -36,7 +36,7 @@ minimum_time = data['minimumTime']
 destinations = data['destinations']
 origins = [student['city'] for student in json_students]
 
-date_format = '%d/%m/%Y, %H:%M:%S '
+date_format = '%d/%m/%Y, %H:%M:%S'
 
 
 flights: List[Flight] = []
@@ -67,11 +67,11 @@ model.Add(count(model, output_destinations, 1) == 1)
 for i in range(len(students)):
     for j in range(len(destinations)):
         if (students[i].city != destinations[j]):
-            b = model.NewBoolVar('b')
-            model.Add(output_destinations[j] == 1).OnlyEnforceIf(b)
-            model.Add(output_destinations[j] == 0).OnlyEnforceIf(b.Not())
-            model.Add(count(model, output_flights, i + 1) == 1).OnlyEnforceIf(b)
-            model.Add(count(model, output_flights, -i - 1) == 1).OnlyEnforceIf(b)
+            is_destination = model.NewBoolVar('b')
+            model.Add(output_destinations[j] == 1).OnlyEnforceIf(is_destination)
+            model.Add(output_destinations[j] == 0).OnlyEnforceIf(is_destination.Not())
+            model.Add(count(model, output_flights, i + 1) == 1).OnlyEnforceIf(is_destination)
+            model.Add(count(model, output_flights, -i - 1) == 1).OnlyEnforceIf(is_destination)
 
 for i in range(len(flights)):
     for j in range(len(students)):
