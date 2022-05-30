@@ -142,13 +142,51 @@ destinations_to_list([D | Ds], Ls, A, R) :-
     destinations_to_list(Ds, Ls, [Di | A], R).
 
 % -----------------------------------------------------------------------------
-% Data structure
+% Dummy flights
 % -----------------------------------------------------------------------------
 
-read_data(Fs, Dis, Ss, MUT, Ls) :-
+homogeneous_flights([], _, Acc, Acc).
+homogeneous_flights([City | Cities], [Iss | Isss]-[Ies | Iess], Acc, Result) :-
+    add_flight_per_interval(City, Iss-Ies, Acc, Accn),
+    homogeneous_flights(Cities, Isss-Iess, Accn, Result).
+
+add_flight_per_interval(_, []-[], Acc, Acc).
+add_flight_per_interval(City, [Is | Iss]-[Ie | Ies],
+    [Origins, Destinations, Departures, Arrivals, Durations, Prices, Stopss], Result) :-
+    add_flight_per_interval(City, Iss-Ies,
+        [[City, City | Origins], [City, City | Destinations],
+        [Is, Ie | Departures], [Is, Ie | Arrivals], [0, 0 | Durations],
+        [0, 0 | Prices], [0, 0 | Stopss]], Result).
+
+% -----------------------------------------------------------------------------
+% Data structures
+% -----------------------------------------------------------------------------
+
+data_flight_origins([[Origins | _] | _], Origins).
+data_flight_destinations([[_, Destinations | _] | _], Destinations).
+data_flight_departures([[_, _, Departures | _] | _], Departures).
+data_flight_arrivals([[_, _, _, Arrivals | _] | _], Arrivals).
+data_flight_durations([[_, _, _, _, Durations | _] | _], Durations).
+data_flight_prices([[_, _, _, _, _, Prices | _] | _], Prices).
+data_flight_connections([[_, _, _, _, _, _, Stopss | _] | _], Stopss).
+
+data_students_cities([_, _, [Cities | _] | _], Cities).
+data_students_availability_starts([_, _, [_, AvailabilityStarts | _] | _], AvailabilityStarts).
+data_students_availability_ends([_, _, [_, _, AvailabilityEnds | _] | _], AvailabilityEnds).
+data_students_maximum_connections([_, _, [_, _, _, MaximumConnections | _] | _], MaximumConnections).
+data_students_maximum_durations([_, _, [_, _, _, _, MaximumDurations | _] | _], MaximumDurations).
+data_students_earliest_departures([_, _, [_, _, _, _, _, EarliestDepartures | _] | _], EarliestDepartures).
+data_students_latest_arrivals([_, _, [_, _, _, _, _, _, LatestArrivals | _] | _], LatestArrivals).
+
+data_possible_destinations([_, PossibleDestinations | _], PossibleDestinations).
+data_minimum_useful_time([_, _, _, MinimumUsefulTime | _], MinimumUsefulTime).
+data_locations([_, _, _, _, Locations | _], Locations).
+
+read_data([Fs, Dis, [Cities, Isss, Iess, MCs, MDs, EDs, LAs], MUT, Ls]) :-
     read_flights_json(Fj), !,
     read_students_json(json([students=Sj,minimumTime=MUT,destinations=Ds])), !,
-    flights_to_lists(Fj, Ls, Fs),
-    students_to_lists(Sj, Ls, Ss),
+    flights_to_lists(Fj, Ls, FsHeterogeneous),
+    students_to_lists(Sj, Ls, [Cities, Isss, Iess, MCs, MDs, EDs, LAs]),
+    homogeneous_flights(Cities, Isss-Iess, FsHeterogeneous, Fs),
     destinations_to_list(Ds, Ls, DisI),
     list_to_fdset(DisI, Dis).
