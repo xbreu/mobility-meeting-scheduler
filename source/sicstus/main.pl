@@ -52,11 +52,12 @@ main :-
     % Enumeration
     format('Finding a solution...', []),
     flatten(Plans, Variables),
-    labeling([time_out(10000, Flag), minimize(Goal)], [Destination | Variables]), !,
+    labeling([time_out(10000, Flag)], [Destination | Variables]), !,
     format('Done~n~n', []),
 
     % Output solution
-    show_results(Flag, Locations, Origins-Destinations, Departures-Arrivals, Destination, Plans).
+    show_results(Flag, Locations, Origins-Destinations, Departures-Arrivals,
+        Destination, Prices, NeedsTrips, Plans).
 
 
 % -----------------------------------------------------------------------------
@@ -205,28 +206,38 @@ restrict_global(UsefulTime-MinimumUsefulTime, TotalCost, Goal) :-
 % Output
 % -----------------------------------------------------------------------------
 
-show_results(Flag, Locations, Origins-Destinations, Departures-Arrivals, Destination, Plans) :-
+show_results(Flag, Locations, Origins-Destinations, Departures-Arrivals, Destination, Prices, NeedsTrips, Plans) :-
     format('Result: ~p~n', [Flag]),
     nth1(Destination, Locations, DestinationValue),
     format('Destination: ~p~n', [DestinationValue]),
-    show_plans(1, Locations, Origins-Destinations, Departures-Arrivals, Plans).
+    show_plans(1, Locations, Origins-Destinations, Departures-Arrivals, Prices, NeedsTrips, Plans).
 
-show_plans(_, _, _, _, []).
-show_plans(I, Locations, Origins-Destinations, Departures-Arrivals, [[Outgoing, Incoming] | Plans]) :-
+show_plans(_, _, _, _, _, _, []).
+show_plans(I, Locations, Origins-Destinations, Departures-Arrivals, Prices, [0 | NeedsTripss], [[Outgoing, Incoming] | Plans]) :-
+    !,
+    format('Student ~d:~n', [I]),
+    format('    no trips needed (0 \x20AC\)~n', []),
+    In is I + 1,
+    show_plans(In, Locations, Origins-Destinations, Departures-Arrivals, Prices, NeedsTripss, Plans).
+show_plans(I, Locations, Origins-Destinations, Departures-Arrivals, Prices, [_ | NeedsTripss], [[Outgoing, Incoming] | Plans]) :-
     format('Student ~d:~n', [I]),
     nth1(Outgoing, Departures, OutgoingDeparture),
     nth1(Outgoing, Arrivals, OutgoingArrival),
     nth1(Outgoing, Origins, OutgoingOriginI),
     nth1(Outgoing, Destinations, OutgoingDestinationI),
+    nth1(Outgoing, Prices, OutgoingPrice),
     nth1(OutgoingOriginI, Locations, OutgoingOrigin),
     nth1(OutgoingDestinationI, Locations, OutgoingDestination),
-    format('    ~p at ~p -> ~p at ~p~n', [OutgoingOrigin, OutgoingDeparture, OutgoingDestination, OutgoingArrival]),
+    format('    ~p at ~p -> ~p at ~p (~d \x20AC\)~n', [OutgoingOrigin, OutgoingDeparture,
+        OutgoingDestination, OutgoingArrival, OutgoingPrice]),
     nth1(Incoming, Departures, IncomingDeparture),
     nth1(Incoming, Arrivals, IncomingArrival),
     nth1(Incoming, Origins, IncomingOriginI),
     nth1(Incoming, Destinations, IncomingDestinationI),
+    nth1(Incoming, Prices, IncomingPrice),
     nth1(IncomingOriginI, Locations, IncomingOrigin),
     nth1(IncomingDestinationI, Locations, IncomingDestination),
-    format('    ~p at ~p -> ~p at ~p~n', [IncomingOrigin, IncomingDeparture, IncomingDestination, IncomingArrival]),
+    format('    ~p at ~p -> ~p at ~p (~d \x20AC\)~n', [IncomingOrigin, IncomingDeparture,
+        IncomingDestination, IncomingArrival, IncomingPrice]),
     In is I + 1,
-    show_plans(In, Locations, Origins-Destinations, Departures-Arrivals, Plans).
+    show_plans(In, Locations, Origins-Destinations, Departures-Arrivals, Prices, NeedsTripss, Plans).
