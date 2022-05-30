@@ -1,8 +1,8 @@
+:- consult('./utils.pl').
+
 :- use_module(library(json)).
 :- use_module(library(lists)).
-:- consult('./data/datetime.pl').
-:- consult('./data/trip.pl').
-:- consult('./utils.pl').
+:- use_module(library(system)).
 
 % -----------------------------------------------------------------------------
 % Reading from files
@@ -26,18 +26,18 @@ read_file(F, R) :-
     read_until_eof(R),
     seen.
 
-read_json_file(F, R) :-
+read_json_from_file(F, R) :-
     read_file(F, Cs),
     json_from_codes(Cs, R).
 
 read_flights_json(R) :-
-    read_json_file('data/flights.json', R).
+    read_json_from_file('data/old/flights.json', R).
 
 read_students_json(R) :-
-    read_json_file('data/students.json', R).
+    read_json_from_file('data/old/students.json', R).
 
 % -----------------------------------------------------------------------------
-% Datetime parsing
+% Date parsing
 % -----------------------------------------------------------------------------
 
 digits_to_number(L, N) :-
@@ -48,13 +48,6 @@ digits_to_number([H | T], A, N) :-
     B is A * 10 + H,
     digits_to_number(T, B, N).
 
-datetime(date(Y, M, D), time(Hs, Ms, Ss)) -->
-    date(Y, M, D), ", ", time(Hs, Ms, Ss).
-
-date(Y, M, D) --> number(D), "/", number(M), "/", number(Y).
-
-time(Hs, Ms, Ss) --> number(Hs), ":", number(Ms), ":", number(Ss).
-
 number(N) --> digits(Ds), {digits_to_number(Ds, N)}.
 
 digits([D]) --> digit(D).
@@ -62,136 +55,85 @@ digits([D | N]) --> digit(D), digits(N).
 
 digit(X) --> [C], {"0" =< C, C =< "9", X is C - "0"}.
 
-chars_codes([], []).
-chars_codes([H | T], [C | Cs]) :-
-    char_code(H, C),
-    chars_codes(T, Cs).
+% "05/05/2022, 08:40:00" = Day/Month/Year, Hour:Minutes/Seconds
+date(Y, Mon, D, Hr, Min, Sec) -->
+    number(D), "/",
+    number(Mon), "/",
+    number(Y), ", ",
+    number(Hr), ":",
+    number(Min), ":",
+    number(Sec).
 
-atom_string(A, S) :-
-    atom_chars(A, C),
-    chars_codes(C, S).
+chars_timestamp(S, Ts) :-
+    phrase(date(Y, Mon, D, Hr, Min, Sec), S),
+    datime(TsI, datime(Y, Mon, D, Hr, Min, Sec)),
+    Ts is TsI + 3600.
 
-atom_to_number(A, N) :-
-    atom_string(A, S),
-    phrase(number(N), S).
+atom_hours_timestamp(A, Ts) :-
+    atom_codes(A, S),
+    append("01/01/1970, ", S, Dt),
+    chars_timestamp(Dt, Ts).
 
-atom_to_datetime(A, datetime(date(Y, M, D), time(Hs, Ms, Ss))) :-
-    atom_string(A, S),
-    phrase(datetime(date(Y, M, D), time(Hs, Ms, Ss)), S).
+atom_start_of_date_timestamp(A, Ts) :-
+    atom_codes(A, S),
+    append(S, ", 00:00:00", Dt),
+    chars_timestamp(Dt, Ts).
 
-atom_to_date(A, date(Y, M, D)) :-
-    atom_string(A, S),
-    phrase(date(Y, M, D), S).
+atom_end_of_date_timestamp(A, Ts) :-
+    atom_codes(A, S),
+    append(S, ", 23:59:59", Dt),
+    chars_timestamp(Dt, Ts).
 
-atom_to_time(A, time(Hs, Ms, Ss)) :-
-    atom_string(A, S),
-    phrase(time(Hs, Ms, Ss), S).
+atom_timestamp(A, Ts) :-
+    atom_codes(A, S),
+    chars_timestamp(S, Ts).
 
-list_of_atoms_to_availability([], []).
-list_of_atoms_to_availability([[Start, End] | As], [[DStart, DEnd] | Ds]) :-
-    atom_to_date(Start, DStart),
-    atom_to_date(End, DEnd),
-    list_of_atoms_to_availability(As, Ds).
+atom_list_timestamps(List, Timestamps) :-
+    atom_list_timestamps(List, [], Timestamps).
+
+atom_list_timestamps([], A, A).
+atom_list_timestamps([[Start, End] | T], A, R) :-
+    atom_start_of_date_timestamp(Start, Tss),
+    atom_end_of_date_timestamp(Start, Tse),
+    atom_list_timestamps(T, [[Tss, Tse] | A], R).
 
 % -----------------------------------------------------------------------------
 % Json to PROLOG's native structures
 % -----------------------------------------------------------------------------
 
-object_attribute_value(json(J), K, V) :-
-    member(K=V, J).
+flights_to_lists(Json, Locations, Flights) :-
+    flights_to_lists(Json, [], Locations, [[], [], [], [], [], [], []], Flights).
 
-json_to_list_of_trips(_, [], []).
-json_to_list_of_trips(Ls, [J | Js], [T | Ts]) :-
-    json_to_trip(Ls, J, T),
-    json_to_list_of_trips(Ls, Js, Ts).
+flights_to_lists([], Al, Al, Af, Af).
+flights_to_lists([json([origin=Origin,destination=Destination,departure=Departure,arrival=Arrival,duration=Duration,price=Price,stops=Stops])
+                 | Fs], Al, Rl, [Origins, Destinations, Departures, Arrivals, Durations, Prices, Stopss], Result) :-
+    insert(Al, Origin, Alo),
+    nth1(OriginI, Alo, Origin),
+    insert(Alo, Destination, Aln),
+    nth1(DestinationI, Aln, Destination),
+    atom_timestamp(Departure, DepartureTs),
+    atom_timestamp(Arrival, ArrivalTs),
+    flights_to_lists(Fs, Aln, Rl, [[OriginI | Origins], [DestinationI | Destinations], [DepartureTs | Departures], [ArrivalTs | Arrivals], [Duration | Durations], [Price | Prices], [Stops | Stopss]], Result).
 
-json_to_list_of_students(_, [], []).
-json_to_list_of_students(Ls, [J | Js], [S | Ss]) :-
-    json_to_student(Ls, J, S),
-    json_to_list_of_students(Ls, Js, Ss).
+students_to_lists(Json, Locations, Students) :-
+    students_to_lists(Json, Locations, [[], [], [], [], [], []], Students).
 
-json_to_list_of_destinations(_, [], []).
-json_to_list_of_destinations(Ls, [J | Js], [D | Ds]) :-
-    json_to_destination(Ls, J, D),
-    json_to_list_of_destinations(Ls, Js, Ds).
-
-json_to_trip(Locations, J,
-    [Origin, Destination, Departure, Arrival, Duration, Price, Stops]) :-
-    object_attribute_value(J, origin, OriginValue),
-    nth1(Origin, Locations, OriginValue),
-    object_attribute_value(J, destination, DestinationValue),
-    nth1(Destination, Locations, DestinationValue),
-    object_attribute_value(J, departure, DepartureAtom),
-    object_attribute_value(J, arrival, ArrivalAtom),
-    object_attribute_value(J, duration, Duration),
-    object_attribute_value(J, price, PriceAtom),
-    object_attribute_value(J, stops, Stops),
-
-    % Parsing of some attributes
-    atom_to_datetime(DepartureAtom, Departure),
-    atom_to_datetime(ArrivalAtom, Arrival),
-    atom_to_number(PriceAtom, Price).
-
-json_to_student(Locations, J, student(City, Availability, MaxConnections,
-    MaxDuration, EarliestDeparture, LatestArrival)) :-
-    object_attribute_value(J, city, CityValue),
-    nth1(City, Locations, CityValue),
-    object_attribute_value(J, availability, AvailabilityAtoms),
-    object_attribute_value(J, maxConnections, MaxConnections),
-    object_attribute_value(J, maxDuration, MaxDuration),
-    object_attribute_value(J, earliestDeparture, EarliestDepartureAtom),
-    object_attribute_value(J, latestArrival, LatestArrivalAtom),
-
-    % Parsing of some attributes
-    list_of_atoms_to_availability(AvailabilityAtoms, Availability),
-    atom_to_time(EarliestDepartureAtom, EarliestDeparture),
-    atom_to_time(LatestArrivalAtom, LatestArrival).
-
-json_to_destination(Locations, Name, Destination) :-
-    nth1(Destination, Locations, Name).
+students_to_lists([], _, As, As).
+students_to_lists([json([city=City,availability=Availability,maxConnections=MC,maxDuration=MD,earliestDeparture=ED,latestArrival=LA])
+                  | Ss], Ls, As, Rs) :-
+    nth1(Ci, Ls, C),
+    atom_list_timestamps(Availability, Is),
+    atom_hours_timestamp(ED, EDts),
+    atom_hours_timestamp(LA, LAts),
+    print([Ci, Is, MC, MD, EDts, LAts]).
 
 % -----------------------------------------------------------------------------
-% Program input
+% Input reading
 % -----------------------------------------------------------------------------
 
-read_data(data(Trips, Destinations, Students, MinimumUsefulTime, Locations,
-               HeterogeneousTripsSize)) :-
-    read_flights_json(Jf), !,
-    setof(Location, Trip^Attribute^(
-        member(Trip, Jf),
-        member(Attribute, [origin, destination]),
-        object_attribute_value(Trip, Attribute, Location)
-    ), Locations),
-    read_students_json(Js),
-    object_attribute_value(Js, students, Ss),
-    object_attribute_value(Js, minimumTime, MinimumUsefulTime),
-    object_attribute_value(Js, destinations, Ds),
-    json_to_list_of_destinations(Locations, Ds, Destinations),
-    json_to_list_of_trips(Locations, Jf, HeterogeneousTrips),
-    length(HeterogeneousTrips, HeterogeneousTripsSize),
-    add_homogeneous_trips(HeterogeneousTrips, Locations, Trips),
-    json_to_list_of_students(Locations, Ss, Students).
-
-add_homogeneous_trips(Trips, Locations, FinalTrips) :-
-    % Calculate the earlier and latest dates
-    map(trip_departure, Trips, Departures),
-    map(trip_arrival, Trips, Arrivals),
-    append(Departures, Arrivals, Datetimes),
-    extreme_datetimes(Datetimes, MinDatetime, MaxDatetime),
-    datetime_date(MinDatetime, MinDate),
-    datetime_date(MaxDatetime, MaxDate),
-    predecessor_date(MinDate, DepartureDate),
-    successor_date(MaxDate, ArrivalDate),
-    DepartureDatetime = datetime(DepartureDate, time(23, 59, 59)),
-    ArrivalDatetime = datetime(ArrivalDate, time(0, 0, 0)),
-    % Create the dummy trips
-    length(Locations, Ls),
-    get_homogeneous_trips(Ls, DepartureDatetime, ArrivalDatetime, Th),
-    append(Trips, Th, FinalTrips).
-
-get_homogeneous_trips(0, _, _, []).
-get_homogeneous_trips(Location, O, I, [To, Ti | Ts]) :-
-    To = [Location, Location, O, O, 0, 0, 0],
-    Ti = [Location, Location, I, I, 0, 0, 0],
-    NextLocation is Location - 1,
-    get_homogeneous_trips(NextLocation, O, I, Ts).
+read_data(data(Fs, Ss, MUT, Dis, Ls)) :-
+    read_flights_json(Fj), !,
+    read_students_json(json([students=Sj,minimumTime=MUT,destinations=Ds])), !,
+    flights_to_lists(Fj, Ls, Fs),
+    students_to_lists(Sj, Ls, Ss),
+    Dis = Ds.
