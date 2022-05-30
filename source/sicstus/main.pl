@@ -77,11 +77,13 @@ print_student_plans(I, Data, [OutgoingTrip | OutgoingTrips]-[IncomingTrip | Inco
 print_plan(Origins-Destinations-Departures-Arrivals-Prices-Locations, Trip) :-
     nth1(Trip, Origins, TripOriginIndex),
     nth1(Trip, Destinations, TripDestinationIndex),
-    nth1(Trip, Departures, TripDepartureTimestamp),
-    nth1(Trip, Arrivals, TripArrivalTimestamp),
+    nth1(Trip, Departures, TripDepartureTimestampI),
+    nth1(Trip, Arrivals, TripArrivalTimestampI),
     nth1(Trip, Prices, TripPrice),
     nth1(TripOriginIndex, Locations, TripOrigin),
     nth1(TripDestinationIndex, Locations, TripDestination),
+    TripDepartureTimestamp is TripDepartureTimestampI - 3600,
+    TripArrivalTimestamp is TripArrivalTimestampI - 3600,
     datime(TripDepartureTimestamp,
         datime(DepartureY, DepartureM, DepartureD, DepartureHr, DepartureMin, DepartureSec)),
     datime(TripArrivalTimestamp,
@@ -90,4 +92,4 @@ print_plan(Origins-Destinations-Departures-Arrivals-Prices-Locations, Trip) :-
     format(Format, [TripOrigin, DepartureY, DepartureM, DepartureD, DepartureHr, DepartureMin, DepartureSec]),
     format(' -> ', []),
     format(Format, [TripDestination, ArrivalY, ArrivalM, ArrivalD, ArrivalHr, ArrivalMin, ArrivalSec]),
-    format(' (~+~`0t~d~4+ \x20AC\)~n', [TripPrice]).
+    format(' - ~+~t~d~4+ \x20AC\~n', [TripPrice]).

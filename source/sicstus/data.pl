@@ -153,7 +153,7 @@ add_flight_per_interval(_, _, []-[], Acc, Acc).
 add_flight_per_interval(City, ED-LA, [Is | Iss]-[Ie | Ies],
     [Origins, Destinations, Departures, Arrivals, Durations, Prices, Stopss], Result) :-
     Isd is Is + ED,
-    Iea is Ie - (86400 - LA),
+    Iea is Ie - (86400 - LA - 1),
     add_flight_per_interval(City, ED-LA, Iss-Ies,
         [[City, City | Origins], [City, City | Destinations],
         [Isd, Iea | Departures], [Isd, Iea | Arrivals], [0, 0 | Durations],
