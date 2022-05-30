@@ -4,7 +4,7 @@
 
 main :-
     % Input
-
+    format('Reading data...', []),
     % Read all data
     read_data(
         [Origins, Destinations, Departures, Arrivals, Durations, Prices, Stopss],
@@ -15,9 +15,10 @@ main :-
     % Calculate size of inputs
     length(Origins, FlightsSize),
     length(Cities, StudentsSize),
+    format('Done~n', []),
 
     % Variables
-
+    format('Creating variables...', []),
     % Final destination variable
     Destination in_set PossibleDestinations,
     % List of pairs with indices of outgoing and incoming trip
@@ -30,7 +31,8 @@ main :-
     sum(Costs, #=, TotalCost),
     % Useful time
     create_useful_time(Departures-Arrivals, OutgoingTrips-IncomingTrips,
-                       LastArrival-EarliestDeparture, UsefulTime).
+                       LastArrival-EarliestDeparture, UsefulTime),
+    format('Done~n', []).
 
 % -----------------------------------------------------------------------------
 % Variables
