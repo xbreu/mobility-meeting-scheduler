@@ -1,4 +1,5 @@
 :- consult('./input.pl').
+:- consult('./utils.pl').
 
 :- use_module(library(clpfd)).
 
@@ -31,7 +32,7 @@ main :-
     sum(Costs, #=, TotalCost),
     % Useful time, in second
     create_useful_time(Departures-Arrivals, OutgoingTrips-IncomingTrips,
-                       LastArrival-EarliestDeparture, UsefulTime),
+                       _, UsefulTime),
     % List of booleans, 1 means the student needs to take a trip
     create_needs_trips(Cities, Destination, NeedsTrips),
     format('Done~n', []),
@@ -44,12 +45,14 @@ main :-
         MaximumConnections, MaximumDurations, EarliestDepartures, LatestArrivals,
         NeedsTrips, AvailabilityIndices, Plans, Destination
     ),
+    % Global restrictions
+    restrict_global(UsefulTime-MinimumUsefulTime, TotalCost, Goal),
     format('Done~n', []),
 
     % Enumeration
     format('Finding a solution...', []),
     flatten(Plans, Variables),
-    labeling([time_out(1000, Flag)], [Destination | Variables]), !,
+    labeling([time_out(10000, Flag), minimize(Goal)], [Destination | Variables]), !,
     format('Done~n~n', []),
 
     % Output solution
@@ -134,8 +137,15 @@ restrict_students([Origins, Destinations, Departures, Arrivals, Durations,
         restrict_student_flight_locations(NeedsTrips, Origins-Destinations,
             City-Destination, OutgoingTrip-IncomingTrip),
         % The trip needs to take place during a time the student is available
+        % and inside their hours
         restrict_student_availability(NeedsTrips, AvailabilityIndex,
-            AvailabilityStarts-AvailabilityEnds, Departures-Arrivals,
+            AvailabilityStarts-AvailabilityEnds,
+            Departures-Arrivals, OutgoingTrip-IncomingTrip),
+        % Maximum number of stops
+        restrict_student_maximum_number_of_stops(NeedsTrips, Stopss, MaximumConnections,
+            OutgoingTrip-IncomingTrip),
+        % Maximum duration
+        restrict_student_maximum_duration(NeedsTrips, Durations, MaximumDuration,
             OutgoingTrip-IncomingTrip),
         % Recursion
         restrict_students([Origins, Destinations, Departures, Arrivals, Durations,
@@ -160,13 +170,36 @@ restrict_student_availability(NeedsTrips, AvailabilityIndex, AvailabilityStarts-
     Departures-Arrivals, OutgoingTrip-IncomingTrip) :-
     (NeedsTrips #= 1) #=> (
         element(OutgoingTrip, Departures, OutgoingDeparture) #/\
+        element(OutgoingTrip, Arrivals, OutgoingArrival) #/\
+        element(IncomingTrip, Departures, IncomingDeparture) #/\
         element(IncomingTrip, Arrivals, IncomingArrival) #/\
         element(AvailabilityIndex, AvailabilityStarts, AvailabilityStart) #/\
         element(AvailabilityIndex, AvailabilityEnds, AvailabilityEnd) #/\
         OutgoingDeparture #>= AvailabilityStart #/\
-        IncomingArrival #=< AvailabilityEnd
+        IncomingArrival #=< AvailabilityEnd #/\
+        IncomingDeparture #> OutgoingArrival
     ).
 
+
+restrict_student_maximum_number_of_stops(NeedsTrips, Stops, MaximumStops, OutgoingTrip-IncomingTrip) :-
+    (NeedsTrips #= 1) #=> (
+        element(OutgoingTrip, Stops, OutgoingStops) #/\
+        element(IncomingTrip, Stops, IncomingStops) #/\
+        OutgoingStops #=< MaximumStops #/\
+        IncomingStops #=< MaximumStops
+    ).
+
+restrict_student_maximum_duration(NeedsTrips, Durations, MaximumDuration, OutgoingTrip-IncomingTrip) :-
+    (NeedsTrips #= 1) #=> (
+        element(OutgoingTrip, Durations, OutgoingDuration) #/\
+        element(IncomingTrip, Durations, IncomingDuration) #/\
+        OutgoingDuration #=< MaximumDuration #/\
+        IncomingDuration #=< MaximumDuration
+    ).
+
+restrict_global(UsefulTime-MinimumUsefulTime, TotalCost, Goal) :-
+    UsefulTime #>= MinimumUsefulTime,
+    Goal #= (86400 * TotalCost) / UsefulTime.
 
 % -----------------------------------------------------------------------------
 % Output
