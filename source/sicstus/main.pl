@@ -62,7 +62,10 @@ print_result(Flag, Data, Variables) :-
     data_locations(Data, Locations),
     variables_outgoing_trips(Variables, OutgoingTrips),
     variables_incoming_trips(Variables, IncomingTrips),
-    print_student_plans(1, Origins-Destinations-Departures-Arrivals-Prices-Locations, OutgoingTrips-IncomingTrips).
+    print_student_plans(1, Origins-Destinations-Departures-Arrivals-Prices-Locations, OutgoingTrips-IncomingTrips),
+    format('~+~`-t~30|~n', []),
+    fd_statistics,
+    statistics.
 
 print_student_plans(_, _, []-_).
 print_student_plans(I, Data, [OutgoingTrip | OutgoingTrips]-[IncomingTrip | IncomingTrips]) :-
