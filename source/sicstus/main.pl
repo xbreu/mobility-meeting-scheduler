@@ -8,9 +8,9 @@ main :-
     % Read all data
     read_data(
         [Origins, Destinations, Departures, Arrivals, Durations, Prices, Stopss],
-        PossibleDestinations, [Cities, Availabilites, MaximumConnections,
-        MaximumDurations, EarliestDepartures, LatestArrivals], MinimumUsefulTime,
-        Locations
+        PossibleDestinations, [Cities, AvailabilityStarts, AvailabilityEnds,
+        MaximumConnections, MaximumDurations, EarliestDepartures, LatestArrivals],
+        MinimumUsefulTime, Locations
     ),
     % Calculate size of inputs
     length(Origins, FlightsSize),
@@ -21,18 +21,40 @@ main :-
     format('Creating variables...', []),
     % Final destination variable
     Destination in_set PossibleDestinations,
-    % List of pairs with indices of outgoing and incoming trip
+    % List of pairs with indices of outgoing and incoming trip, 0 represents none
     create_plans(FlightsSize, StudentsSize, Plans, OutgoingTrips, IncomingTrips),
     % List of which availability interval was chosen for each student
-    create_availability_indices(Availabilites, AvailabilityIndices),
+    create_availability_indices(AvailabilityStarts, AvailabilityIndices),
     % Cost of each student
     create_costs(Plans, Prices, Costs),
     % Total cost of trips
     sum(Costs, #=, TotalCost),
-    % Useful time
+    % Useful time, in second
     create_useful_time(Departures-Arrivals, OutgoingTrips-IncomingTrips,
                        LastArrival-EarliestDeparture, UsefulTime),
-    format('Done~n', []).
+    % List of booleans, 1 means the student needs to take a trip
+    create_needs_trips(Cities, Destination, NeedsTrips),
+    format('Done~n', []),
+
+    % Contraints
+    format('Creating constraints...', []),
+    % Individual restrictions
+    restrict_students([Origins, Destinations, Departures, Arrivals, Durations,
+        Prices, Stopss], Cities, AvailabilityStarts, AvailabilityEnds,
+        MaximumConnections, MaximumDurations, EarliestDepartures, LatestArrivals,
+        NeedsTrips, AvailabilityIndices, Plans, Destination
+    ),
+    format('Done~n', []),
+
+    % Enumeration
+    format('Finding a solution...', []),
+    flatten(Plans, Variables),
+    labeling([time_out(1000, Flag)], [Destination | Variables]), !,
+    format('Done~n~n', []),
+
+    % Output solution
+    show_results(Flag, Locations, Origins-Destinations, Departures-Arrivals, Destination, Plans).
+
 
 % -----------------------------------------------------------------------------
 % Variables
@@ -55,7 +77,7 @@ split_plans([[O, I] | Ps], Ao-Ro, Ai-Ri) :-
 add_plan_domains(_, []).
 add_plan_domains(N, [P | Ps]) :-
     length(P, 2),
-    domain(P, 1, N),
+    domain(P, 0, N),
     add_plan_domains(N, Ps).
 
 create_availability_indices(Availabilites, AvailabilityIndices) :-
@@ -85,3 +107,93 @@ create_useful_time(Departures-Arrivals, OutgoingTrips-IncomingTrips, LastArrival
     maximum(LastArrival, TripArrivals),
     minimum(EarliestDeparture, TripDepartures),
     UsefulTime #= EarliestDeparture - LastArrival.
+
+create_needs_trips(Cities, Destination, NeedsTrips) :-
+    create_needs_trips(Cities, Destination, [], NeedsTrips).
+
+create_needs_trips([], _, Acc, Acc).
+create_needs_trips([City | Cities], Destination, Acc, NeedsTrips) :-
+    City #\= Destination #<=> B,
+    append(Acc, [B], Accn),
+    create_needs_trips(Cities, Destination, Accn, NeedsTrips).
+
+% -----------------------------------------------------------------------------
+% Constraints
+% -----------------------------------------------------------------------------
+
+restrict_students(_, [], _, _, _, _, _, _, _, _, _, _) :- !.
+restrict_students([Origins, Destinations, Departures, Arrivals, Durations,
+    Prices, Stopss], [City | Cities], [AvailabilityStarts | AvailabilityStartss],
+    [AvailabilityEnds | AvailabilityEndss], [MaximumConnections | MaximumConnectionss],
+    [MaximumDuration | MaximumDurations], [EarliestDeparture | EarliestDepartures],
+    [LatestArrival | LatestArrivals], [NeedsTrips | NeedsTripss],
+    [AvailabilityIndex | AvailabilityIndices], [[OutgoingTrip, IncomingTrip] | Plans],
+    Destination) :-
+        % The trips needs to start on the student city and end in it again,
+        % they also need to lead the student to the destination.
+        restrict_student_flight_locations(NeedsTrips, Origins-Destinations,
+            City-Destination, OutgoingTrip-IncomingTrip),
+        % The trip needs to take place during a time the student is available
+        restrict_student_availability(NeedsTrips, AvailabilityIndex,
+            AvailabilityStarts-AvailabilityEnds, Departures-Arrivals,
+            OutgoingTrip-IncomingTrip),
+        % Recursion
+        restrict_students([Origins, Destinations, Departures, Arrivals, Durations,
+            Prices, Stopss], Cities, AvailabilityStartss, AvailabilityEndss,
+            MaximumConnectionss, MaximumDurations, EarliestDepartures, LatestArrivals,
+            NeedsTripss, AvailabilityIndices, Plans, Destination).
+
+restrict_student_flight_locations(NeedsTrips, Origins-Destinations, City-Destination,
+    OutgoingTrip-IncomingTrip) :-
+    (NeedsTrips #= 1) #=> (
+        element(OutgoingTrip, Origins, OutgoingOrigin) #/\
+        element(OutgoingTrip, Destinations, OutgoingDestination) #/\
+        element(IncomingTrip, Origins, IncomingOrigin) #/\
+        element(IncomingTrip, Destinations, IncomingDestination) #/\
+        OutgoingOrigin #= City #/\
+        IncomingDestination #= City #/\
+        OutgoingDestination #= Destination #/\
+        IncomingOrigin #= Destination
+    ).
+
+restrict_student_availability(NeedsTrips, AvailabilityIndex, AvailabilityStarts-AvailabilityEnds,
+    Departures-Arrivals, OutgoingTrip-IncomingTrip) :-
+    (NeedsTrips #= 1) #=> (
+        element(OutgoingTrip, Departures, OutgoingDeparture) #/\
+        element(IncomingTrip, Arrivals, IncomingArrival) #/\
+        element(AvailabilityIndex, AvailabilityStarts, AvailabilityStart) #/\
+        element(AvailabilityIndex, AvailabilityEnds, AvailabilityEnd) #/\
+        OutgoingDeparture #>= AvailabilityStart #/\
+        IncomingArrival #=< AvailabilityEnd
+    ).
+
+
+% -----------------------------------------------------------------------------
+% Output
+% -----------------------------------------------------------------------------
+
+show_results(Flag, Locations, Origins-Destinations, Departures-Arrivals, Destination, Plans) :-
+    format('Result: ~p~n', [Flag]),
+    nth1(Destination, Locations, DestinationValue),
+    format('Destination: ~p~n', [DestinationValue]),
+    show_plans(1, Locations, Origins-Destinations, Departures-Arrivals, Plans).
+
+show_plans(_, _, _, _, []).
+show_plans(I, Locations, Origins-Destinations, Departures-Arrivals, [[Outgoing, Incoming] | Plans]) :-
+    format('Student ~d:~n', [I]),
+    nth1(Outgoing, Departures, OutgoingDeparture),
+    nth1(Outgoing, Arrivals, OutgoingArrival),
+    nth1(Outgoing, Origins, OutgoingOriginI),
+    nth1(Outgoing, Destinations, OutgoingDestinationI),
+    nth1(OutgoingOriginI, Locations, OutgoingOrigin),
+    nth1(OutgoingDestinationI, Locations, OutgoingDestination),
+    format('    ~p at ~p -> ~p at ~p~n', [OutgoingOrigin, OutgoingDeparture, OutgoingDestination, OutgoingArrival]),
+    nth1(Incoming, Departures, IncomingDeparture),
+    nth1(Incoming, Arrivals, IncomingArrival),
+    nth1(Incoming, Origins, IncomingOriginI),
+    nth1(Incoming, Destinations, IncomingDestinationI),
+    nth1(IncomingOriginI, Locations, IncomingOrigin),
+    nth1(IncomingDestinationI, Locations, IncomingDestination),
+    format('    ~p at ~p -> ~p at ~p~n', [IncomingOrigin, IncomingDeparture, IncomingDestination, IncomingArrival]),
+    In is I + 1,
+    show_plans(In, Locations, Origins-Destinations, Departures-Arrivals, Plans).

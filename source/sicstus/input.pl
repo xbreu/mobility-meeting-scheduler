@@ -94,13 +94,13 @@ atom_timestamp(A, Ts) :-
     chars_timestamp(S, Ts).
 
 atom_list_timestamps(List, Timestamps) :-
-    atom_list_timestamps(List, [], Timestamps).
+    atom_list_timestamps(List, []-[], Timestamps).
 
-atom_list_timestamps([], A, A).
-atom_list_timestamps([[Start, End] | T], A, R) :-
+atom_list_timestamps([], A1-A2, A1-A2).
+atom_list_timestamps([[Start, End] | T], A1-A2, R) :-
     atom_start_of_date_timestamp(Start, Tss),
     atom_end_of_date_timestamp(End, Tse),
-    atom_list_timestamps(T, [[Tss, Tse] | A], R).
+    atom_list_timestamps(T, [Tss | A1]-[Tse | A2], R).
 
 % -----------------------------------------------------------------------------
 % Json to PROLOG's native structures
@@ -122,16 +122,16 @@ flights_to_lists([json([origin=Origin,destination=Destination,departure=Departur
     flights_to_lists(Fs, Aln, Rl, [[OriginI | Origins], [DestinationI | Destinations], [DepartureTs | Departures], [ArrivalTs | Arrivals], [Duration | Durations], [Price | Prices], [Stops | Stopss]], Result).
 
 students_to_lists(Json, Locations, Students) :-
-    students_to_lists(Json, Locations, [[], [], [], [], [], []], Students).
+    students_to_lists(Json, Locations, [[], [], [], [], [], [], []], Students).
 
 students_to_lists([], _, As, As).
 students_to_lists([json([city=City,availability=Availability,maxConnections=MC,maxDuration=MD,earliestDeparture=ED,latestArrival=LA])
-                  | Ss], Ls, [Cities, Availabilities, MCs, MDs, EDs, LAs], Rs) :-
+                  | Ss], Ls, [Cities, Isss, Iess, MCs, MDs, EDs, LAs], Rs) :-
     nth1(Ci, Ls, City),
-    atom_list_timestamps(Availability, Is),
+    atom_list_timestamps(Availability, Iss-Ies),
     atom_hours_timestamp(ED, EDts),
     atom_hours_timestamp(LA, LAts),
-    students_to_lists(Ss, Ls, [[Ci | Cities], [Is | Availabilities], [MC | MCs], [MD | MDs], [EDts | EDs], [LAts | LAs]], Rs).
+    students_to_lists(Ss, Ls, [[Ci | Cities], [Iss | Isss], [Ies | Iess], [MC | MCs], [MD | MDs], [EDts | EDs], [LAts | LAs]], Rs).
 
 destinations_to_list(Destinations, Locations, Result) :-
     destinations_to_list(Destinations, Locations, [], Result).
