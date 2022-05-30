@@ -1,5 +1,6 @@
 :- consult('./utils.pl').
 
+:- use_module(library(clpfd)).
 :- use_module(library(json)).
 :- use_module(library(lists)).
 :- use_module(library(system)).
@@ -69,6 +70,10 @@ chars_timestamp(S, Ts) :-
     datime(TsI, datime(Y, Mon, D, Hr, Min, Sec)),
     Ts is TsI + 3600.
 
+atom_number(Atom, Number) :-
+    atom_codes(Atom, S),
+    phrase(number(Number), S).
+
 atom_hours_timestamp(A, Ts) :-
     atom_codes(A, S),
     append("01/01/1970, ", S, Dt),
@@ -94,7 +99,7 @@ atom_list_timestamps(List, Timestamps) :-
 atom_list_timestamps([], A, A).
 atom_list_timestamps([[Start, End] | T], A, R) :-
     atom_start_of_date_timestamp(Start, Tss),
-    atom_end_of_date_timestamp(Start, Tse),
+    atom_end_of_date_timestamp(End, Tse),
     atom_list_timestamps(T, [[Tss, Tse] | A], R).
 
 % -----------------------------------------------------------------------------
@@ -105,7 +110,7 @@ flights_to_lists(Json, Locations, Flights) :-
     flights_to_lists(Json, [], Locations, [[], [], [], [], [], [], []], Flights).
 
 flights_to_lists([], Al, Al, Af, Af).
-flights_to_lists([json([origin=Origin,destination=Destination,departure=Departure,arrival=Arrival,duration=Duration,price=Price,stops=Stops])
+flights_to_lists([json([origin=Origin,destination=Destination,departure=Departure,arrival=Arrival,duration=Duration,price=PriceAtom,stops=Stops])
                  | Fs], Al, Rl, [Origins, Destinations, Departures, Arrivals, Durations, Prices, Stopss], Result) :-
     insert(Al, Origin, Alo),
     nth1(OriginI, Alo, Origin),
@@ -113,6 +118,7 @@ flights_to_lists([json([origin=Origin,destination=Destination,departure=Departur
     nth1(DestinationI, Aln, Destination),
     atom_timestamp(Departure, DepartureTs),
     atom_timestamp(Arrival, ArrivalTs),
+    atom_number(PriceAtom, Price),
     flights_to_lists(Fs, Aln, Rl, [[OriginI | Origins], [DestinationI | Destinations], [DepartureTs | Departures], [ArrivalTs | Arrivals], [Duration | Durations], [Price | Prices], [Stops | Stopss]], Result).
 
 students_to_lists(Json, Locations, Students) :-
@@ -120,20 +126,29 @@ students_to_lists(Json, Locations, Students) :-
 
 students_to_lists([], _, As, As).
 students_to_lists([json([city=City,availability=Availability,maxConnections=MC,maxDuration=MD,earliestDeparture=ED,latestArrival=LA])
-                  | Ss], Ls, As, Rs) :-
-    nth1(Ci, Ls, C),
+                  | Ss], Ls, [Cities, Availabilities, MCs, MDs, EDs, LAs], Rs) :-
+    nth1(Ci, Ls, City),
     atom_list_timestamps(Availability, Is),
     atom_hours_timestamp(ED, EDts),
     atom_hours_timestamp(LA, LAts),
-    print([Ci, Is, MC, MD, EDts, LAts]).
+    students_to_lists(Ss, Ls, [[Ci | Cities], [Is | Availabilities], [MC | MCs], [MD | MDs], [EDts | EDs], [LAts | LAs]], Rs).
+
+destinations_to_list(Destinations, Locations, Result) :-
+    destinations_to_list(Destinations, Locations, [], Result).
+
+destinations_to_list([], _, A, A).
+destinations_to_list([D | Ds], Ls, A, R) :-
+    nth1(Di, Ls, D),
+    destinations_to_list(Ds, Ls, [Di | A], R).
 
 % -----------------------------------------------------------------------------
-% Input reading
+% Data structure
 % -----------------------------------------------------------------------------
 
-read_data(data(Fs, Ss, MUT, Dis, Ls)) :-
+read_data(Fs, Dis, Ss, MUT, Ls) :-
     read_flights_json(Fj), !,
     read_students_json(json([students=Sj,minimumTime=MUT,destinations=Ds])), !,
     flights_to_lists(Fj, Ls, Fs),
     students_to_lists(Sj, Ls, Ss),
-    Dis = Ds.
+    destinations_to_list(Ds, Ls, DisI),
+    list_to_fdset(DisI, Dis).
