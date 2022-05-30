@@ -1,9 +1,11 @@
+:- use_module(library(clpfd)).
+
 insert(L, E, L) :-
     member(E, L), !.
 insert(L, E, [E | L]).
 
 date_to_hours(Dts, Hts) :-
-    Hts is Dts mod 86400.
+    Hts #= Dts mod 86400.
 
 % New constraint, elements in List, accessed by each index in Indices result
 % in the list Values.
