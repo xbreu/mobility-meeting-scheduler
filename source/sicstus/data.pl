@@ -146,16 +146,18 @@ destinations_to_list([D | Ds], Ls, A, R) :-
 % -----------------------------------------------------------------------------
 
 homogeneous_flights([], _, Acc, Acc).
-homogeneous_flights([City | Cities], [Iss | Isss]-[Ies | Iess], Acc, Result) :-
-    add_flight_per_interval(City, Iss-Ies, Acc, Accn),
-    homogeneous_flights(Cities, Isss-Iess, Accn, Result).
+homogeneous_flights([City | Cities], [Iss | Isss]-[Ies | Iess]-[ED | EDs]-[LA | LAs], Acc, Result) :-
+    add_flight_per_interval(City, ED-LA, Iss-Ies, Acc, Accn),
+    homogeneous_flights(Cities, Isss-Iess-EDs-LAs, Accn, Result).
 
-add_flight_per_interval(_, []-[], Acc, Acc).
-add_flight_per_interval(City, [Is | Iss]-[Ie | Ies],
+add_flight_per_interval(_, _, []-[], Acc, Acc).
+add_flight_per_interval(City, ED-LA, [Is | Iss]-[Ie | Ies],
     [Origins, Destinations, Departures, Arrivals, Durations, Prices, Stopss], Result) :-
-    add_flight_per_interval(City, Iss-Ies,
+    Isd is Is + ED,
+    Iea is Ie - (86400 - LA),
+    add_flight_per_interval(City, ED-LA, Iss-Ies,
         [[City, City | Origins], [City, City | Destinations],
-        [Is, Ie | Departures], [Is, Ie | Arrivals], [0, 0 | Durations],
+        [Isd, Iea | Departures], [Isd, Iea | Arrivals], [0, 0 | Durations],
         [0, 0 | Prices], [0, 0 | Stopss]], Result).
 
 % -----------------------------------------------------------------------------
@@ -187,6 +189,6 @@ read_data([Fs, Dis, [Cities, Isss, Iess, MCs, MDs, EDs, LAs], MUT, Ls]) :-
     read_students_json(json([students=Sj,minimumTime=MUT,destinations=Ds])), !,
     flights_to_lists(Fj, Ls, FsHeterogeneous),
     students_to_lists(Sj, Ls, [Cities, Isss, Iess, MCs, MDs, EDs, LAs]),
-    homogeneous_flights(Cities, Isss-Iess, FsHeterogeneous, Fs),
+    homogeneous_flights(Cities, Isss-Iess-EDs-LAs, FsHeterogeneous, Fs),
     destinations_to_list(Ds, Ls, DisI),
     list_to_fdset(DisI, Dis).

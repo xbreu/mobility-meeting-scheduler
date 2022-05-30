@@ -55,7 +55,7 @@ constrain_students_restrictions(
         constrain_student_flight_locations(Origins-Destinations, Destination,
             OutgoingTrip-IncomingTrip, City),
         constrain_student_availability(Departures-Arrivals, OutgoingTrip-IncomingTrip,
-            AvailabilityStarts, AvailabilityEnds),
+            AvailabilityStarts, AvailabilityEnds, EarliestDeparture, LatestArrival),
         constrain_student_maximum_number_of_connections(Stops, OutgoingTrip-IncomingTrip,
             MaximumConnections),
         constrain_student_maximum_duration(Durations, OutgoingTrip-IncomingTrip,
@@ -81,7 +81,7 @@ constrain_student_flight_locations(Origins-Destinations, Destination,
 % The trip needs to take place during a time the student is available and
 % inside their hours.
 constrain_student_availability(Departures-Arrivals, OutgoingTrip-IncomingTrip,
-    AvailabilityStarts, AvailabilityEnds) :-
+    AvailabilityStarts, AvailabilityEnds, EarliestDeparture, LatestArrival) :-
     element(OutgoingTrip, Departures, OutgoingDeparture),
     element(OutgoingTrip, Arrivals, OutgoingArrival),
     element(IncomingTrip, Departures, IncomingDeparture),
@@ -90,15 +90,19 @@ constrain_student_availability(Departures-Arrivals, OutgoingTrip-IncomingTrip,
     element(AvailabilityIndex, AvailabilityEnds, AvailabilityEnd),
     OutgoingDeparture #>= AvailabilityStart,
     IncomingArrival #=< AvailabilityEnd,
-    IncomingDeparture #> OutgoingArrival.
+    IncomingDeparture #>= OutgoingArrival,
+    date_to_hours(OutgoingDeparture, DepartureHour),
+    date_to_hours(IncomingArrival, IncomingHour),
+    DepartureHour #>= EarliestDeparture,
+    IncomingHour #=< LatestArrival.
 
 % Maximum number of stops
 constrain_student_maximum_number_of_connections(Stops, OutgoingTrip-IncomingTrip,
     MaximumConnections) :-
     element(OutgoingTrip, Stops, OutgoingStops),
     element(IncomingTrip, Stops, IncomingStops),
-    OutgoingStops #=< MaximumStops,
-    IncomingStops #=< MaximumStops.
+    OutgoingStops #=< MaximumConnections,
+    IncomingStops #=< MaximumConnections.
 
 % Maximum duration
 constrain_student_maximum_duration(Durations, OutgoingTrip-IncomingTrip,
