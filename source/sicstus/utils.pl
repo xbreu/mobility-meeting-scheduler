@@ -2,7 +2,8 @@
 
 insert(L, E, L) :-
     member(E, L), !.
-insert(L, E, [E | L]).
+insert(L, E, R) :-
+    append(L, [E], R).
 
 date_to_hours(Dts, Hts) :-
     Hts #= Dts mod 86400.
