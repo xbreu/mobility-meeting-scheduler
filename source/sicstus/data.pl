@@ -31,10 +31,10 @@ read_json_from_file(F, R) :-
     json_from_codes(Cs, R).
 
 read_flights_json(R) :-
-    read_json_from_file('data/old/flights.json', R).
+    read_json_from_file('data/new/flights.json', R).
 
 read_students_json(R) :-
-    read_json_from_file('data/old/students.json', R).
+    read_json_from_file('data/new/students.json', R).
 
 % -----------------------------------------------------------------------------
 % Date parsing
