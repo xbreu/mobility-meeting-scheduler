@@ -10,12 +10,14 @@
 % -----------------------------------------------------------------------------
 
 main :-
+    statistics(runtime, [T0|_]),
     % Input
     format('Reading data...', []),
     % Read all data
     read_data(Data),
     % Calculate size of inputs
     format('Done~n', []),
+    statistics(runtime, [T1|_]),
 
     % Variables
     format('Creating variables...', []),
@@ -33,9 +35,16 @@ main :-
     variables_cost(Variables, Cost),
     labeling([time_out(10000, Flag), minimize(Cost)], LabelVariables), !,
     format('Done~n~n', []),
+    statistics(runtime, [T2|_]),
 
     % Output
-    print_result(Flag, Data, Variables).
+    print_result(Flag, Data, Variables),
+    statistics(runtime, [T3|_]),
+
+    TParse is T1 - T0,
+    T is T2 - T1,
+    TPrint is T3 - T0,
+    format('Took ~3d + ~3d + ~3d sec.~n', [TParse, T, TPrint]).
 
 % -----------------------------------------------------------------------------
 % Final output
