@@ -9,7 +9,7 @@ MAXIMUM_FLIGHT_COST = 2500
 MAXIMUM_USEFUL_TIME = 2628288
 MAX_INT = 99999999999999
 # Import students information
-file = open('../../data/students.json')
+file = open('../../data/new/students.json')
 
 input = json.load(file)
 
@@ -41,7 +41,7 @@ print("Imported", N_STUDENTS, "students,", len(DESTINATIONS), "destinations and 
 
 
 # Import flights
-file = open('../../data/flights2.json')
+file = open('../../data/new/flights.json')
 
 FLIGHTS = json.load(file)
 
@@ -220,6 +220,11 @@ model.AddDivisionEquality(function, TotalCost*1000000000, UsefulTime)
 model.Minimize(function)
 
 
+
+Vars = [Destination] + [flight for student in StudentsFlights for flight in student]
+# Varchooser = model.select_largest(model.var_success_rate())
+# Valuechooser = model.select_random_value()
+model.AddDecisionStrategy(Vars, cp_model.CHOOSE_MAX_DOMAIN_SIZE, cp_model.SELECT_UPPER_HALF)
 solver = cp_model.CpSolver()
 status = solver.Solve(model)
 # print(solver._CpSolver__solution)
