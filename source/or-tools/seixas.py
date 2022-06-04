@@ -30,8 +30,8 @@ for student in STUDENTS_INFO:
     studentStarts = []
     studentEnds = []
     for start, end in student["availability"]:
-        studentStarts.append(int(round(datetime.strptime(start, '%d/%m/%Y').timestamp())))
-        studentEnds.append(int(round(datetime.strptime(end, '%d/%m/%Y').timestamp())))
+        studentStarts.append(int(round(datetime.strptime(start + " " + student["earliestDeparture"], '%d/%m/%Y %H:%M:%S').timestamp())))
+        studentEnds.append(int(round(datetime.strptime(end + " " + student["latestArrival"], '%d/%m/%Y %H:%M:%S').timestamp())))
     STUDENTS_START_AVAILABILITIES.append(studentStarts)
     STUDENTS_END_AVAILABILITIES.append(studentEnds)
 
@@ -44,6 +44,23 @@ print("Imported", N_STUDENTS, "students,", len(DESTINATIONS), "destinations and 
 file = open('../../data/flights2.json')
 
 FLIGHTS = json.load(file)
+
+# Add dummy flights
+def add_dummy_flight(city, date, time):
+    FLIGHTS.append({
+        "origin": city,
+        "destination": city,
+        "departure": date + ", " + time,
+        "arrival": date + ", " + time,
+        "duration": 0,
+        "price": "0",
+        "stops": 0
+    })
+
+for student in STUDENTS_INFO:
+    for start, end in student["availability"]:
+        add_dummy_flight(student["city"], start, student["earliestDeparture"])
+        add_dummy_flight(student["city"], end, student["latestArrival"])
 
 FLIGHTS_ORIGINS = [DESTINATIONS.index(x) for x in [flight["origin"] for flight in FLIGHTS]]
 FLIGHTS_DESTINATIONS = [DESTINATIONS.index(x) for x in [flight["destination"] for flight in FLIGHTS]]
@@ -97,21 +114,18 @@ for i in range(N_STUDENTS):
     Outgoing, Incoming = StudentsFlights[i]
     StudentOrigin = STUDENTS_ORIGINS[i]
 
-    student_from_outside_destination = model.NewBoolVar('student_from_outside_destination')
-    model.Add(StudentOrigin != Destination).OnlyEnforceIf(student_from_outside_destination)
-    model.Add(StudentOrigin == Destination).OnlyEnforceIf(student_from_outside_destination.Not())
 
     # Origin of the flights
     out = element(model, FLIGHTS_ORIGINS, Outgoing)
     inc = element(model, FLIGHTS_ORIGINS, Incoming)
-    model.Add(out == StudentOrigin).OnlyEnforceIf(student_from_outside_destination)
-    model.Add(inc == Destination).OnlyEnforceIf(student_from_outside_destination)
+    model.Add(out == StudentOrigin)
+    model.Add(inc == Destination)
 
     # Destination of the flights
     out = element(model, FLIGHTS_DESTINATIONS, Outgoing)
     inc = element(model, FLIGHTS_DESTINATIONS, Incoming)
-    model.Add(out == Destination).OnlyEnforceIf(student_from_outside_destination)
-    model.Add(inc == StudentOrigin).OnlyEnforceIf(student_from_outside_destination)
+    model.Add(out == Destination)
+    model.Add(inc == StudentOrigin)
 
     # Availability
     startAvailability = element(model, STUDENTS_START_AVAILABILITIES[i], StudentsAvailabilityIntervals[i])
@@ -124,65 +138,60 @@ for i in range(N_STUDENTS):
     # Outgoing arrival time must be before Incoming departure time
     out = element(model, FLIGHTS_ARRIVALS, Outgoing)
     inc = element(model, FLIGHTS_DEPARTURES, Incoming)
-    model.Add(out < inc).OnlyEnforceIf(student_from_outside_destination) 
+    model.Add(out < inc) 
 
     # Earliest departure
     out = element(model, FLIGHTS_DEPARTURE_TIMES, Outgoing)
     inc = element(model, FLIGHTS_DEPARTURE_TIMES, Incoming)
     student_departure = element(model, STUDENTS_DEPARTURES, i)
-    model.Add(out >= student_departure).OnlyEnforceIf(student_from_outside_destination)
-    model.Add(inc >= student_departure).OnlyEnforceIf(student_from_outside_destination)
+    model.Add(out >= student_departure)
+    model.Add(inc >= student_departure)
 
     # Latest arrival
     out = element(model, FLIGHTS_ARRIVAL_TIMES, Outgoing)
     inc = element(model, FLIGHTS_ARRIVAL_TIMES, Incoming)
     student_arrival = element(model, STUDENTS_ARRIVALS, i)
-    model.Add(out <= student_arrival).OnlyEnforceIf(student_from_outside_destination)
-    model.Add(inc <= student_arrival).OnlyEnforceIf(student_from_outside_destination)
+    model.Add(out <= student_arrival)
+    model.Add(inc <= student_arrival)
 
     # Maximum number of stops
     out = element(model, FLIGHTS_STOPS, Outgoing)
     inc = element(model, FLIGHTS_STOPS, Incoming)
     student_stops = element(model, STUDENTS_STOPS, i)
-    model.Add(out <= student_stops).OnlyEnforceIf(student_from_outside_destination)
-    model.Add(inc <= student_stops).OnlyEnforceIf(student_from_outside_destination)
+    model.Add(out <= student_stops)
+    model.Add(inc <= student_stops)
 
     # Maximum flight duration
     out = element(model, FLIGHTS_DURATIONS, Outgoing)
     inc = element(model, FLIGHTS_DURATIONS, Incoming)
     student_duration = element(model, STUDENTS_DURATIONS, i)
-    model.Add(out < student_duration).OnlyEnforceIf(student_from_outside_destination)
-    model.Add(inc < student_duration).OnlyEnforceIf(student_from_outside_destination)
+    model.Add(out < student_duration)
+    model.Add(inc < student_duration)
 
     # Student Cost
     out_cost = element(model, FLIGHTS_COSTS, StudentsFlights[i][0])
     inc_cost = element(model, FLIGHTS_COSTS, StudentsFlights[i][1])
-    model.Add(inc_cost + out_cost == StudentsCosts[i]).OnlyEnforceIf(student_from_outside_destination)
-    model.Add(StudentsCosts[i] == 0).OnlyEnforceIf(student_from_outside_destination.Not())
+    model.Add(inc_cost + out_cost == StudentsCosts[i])
 
     # First outgoing times 
     out_time = element(model, first_outgoing_times, i)
     time = element(model, FLIGHTS_ARRIVALS, StudentsFlights[i][0])
-    model.Add(out_time == time).OnlyEnforceIf(student_from_outside_destination)
-    model.Add(out_time == MAX_INT).OnlyEnforceIf(student_from_outside_destination.Not())
+    model.Add(out_time == time)
 
     # Last outgoing times 
     out_time = element(model, last_outgoing_times, i)
     time = element(model, FLIGHTS_ARRIVALS, StudentsFlights[i][0])
-    model.Add(out_time == time).OnlyEnforceIf(student_from_outside_destination)
-    model.Add(out_time == 0).OnlyEnforceIf(student_from_outside_destination.Not())
+    model.Add(out_time == time)
 
     # First incoming times
     inc_time = element(model, first_incoming_times, i)
     time = element(model, FLIGHTS_DEPARTURES, StudentsFlights[i][1])
-    model.Add(inc_time == time).OnlyEnforceIf(student_from_outside_destination)
-    model.Add(inc_time == MAX_INT).OnlyEnforceIf(student_from_outside_destination.Not())
+    model.Add(inc_time == time)
 
     # Last incoming times
     inc_time = element(model, last_incoming_times, i)
     time = element(model, FLIGHTS_DEPARTURES, StudentsFlights[i][1])
-    model.Add(inc_time == time).OnlyEnforceIf(student_from_outside_destination)
-    model.Add(inc_time == 0).OnlyEnforceIf(student_from_outside_destination.Not())
+    model.Add(inc_time == time)
 
 
 firstOutgoingTime = model.NewIntVar(0, MAX_INT, 'first_out')
