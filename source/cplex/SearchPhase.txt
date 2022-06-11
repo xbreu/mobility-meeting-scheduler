@@ -1,0 +1,35 @@
+ ! --------------------------------------------------- CP Optimizer 22.1.0.0 --
+ ! Minimization problem - 16 variables, 52 constraints, 1 phase
+ ! TimeLimit            = 2000
+ ! Initial process time : 0.63s (0.63s extraction + 0.00s propagation)
+ !  . Log search space  : 151.8 (before), 151.8 (after)
+ !  . Memory usage      : 10.3 MB (before), 10.3 MB (after)
+ ! Using parallel search with 8 workers.
+ ! ----------------------------------------------------------------------------
+
+Without
+ ! ----------------------------------------------------------------------------
+ ! Search completed, 84 solutions found.
+ ! Best objective         : 0.00005684341 (optimal - effective tol. is 5.684341e-09)
+ ! Best bound             : 0
+ ! ----------------------------------------------------------------------------
+ ! Number of branches     : 4440
+ ! Number of fails        : 1556
+ ! Total memory usage     : 177.3 MB (177.3 MB CP Optimizer + 0.0 MB Concert)
+ ! Time spent in solve    : 1.25s (0.67s engine + 0.59s extraction)
+ ! Search speed (br. / s) : 6727.3
+ ! ----------------------------------------------------------------------------
+
+Varchooser = model.select_random_var()
+Valuechooser = model.select_random_value()
+ ! ----------------------------------------------------------------------------
+ ! Search completed, 97 solutions found.
+ ! Best objective         : 0.00005684341 (optimal - effective tol. is 5.684341e-09)
+ ! Best bound             : 0
+ ! ----------------------------------------------------------------------------
+ ! Number of branches     : 3678
+ ! Number of fails        : 1121
+ ! Total memory usage     : 177.1 MB (177.0 MB CP Optimizer + 0.0 MB Concert)
+ ! Time spent in solve    : 1.48s (0.84s engine + 0.64s extraction)
+ ! Search speed (br. / s) : 4378.6
+ ! ----------------------------------------------------------------------------
