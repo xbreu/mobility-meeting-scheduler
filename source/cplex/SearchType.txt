@@ -1,0 +1,86 @@
+ ! --------------------------------------------------- CP Optimizer 22.1.0.0 --
+ ! Minimization problem - 16 variables, 52 constraints, 1 phase
+ ! TimeLimit            = 2000
+ ! Initial process time : 0.63s (0.63s extraction + 0.00s propagation)
+ !  . Log search space  : 151.8 (before), 151.8 (after)
+ !  . Memory usage      : 10.3 MB (before), 10.3 MB (after)
+ ! Using parallel search with 8 workers.
+ ! ----------------------------------------------------------------------------
+
+ AUTO
+ ! ----------------------------------------------------------------------------
+ ! Search completed, 68 solutions found.
+ ! Best objective         : 0.00005684341 (optimal - effective tol. is 5.684341e-09)
+ ! Best bound             : 0.00005683772
+ ! ----------------------------------------------------------------------------
+ ! Number of branches     : 18162
+ ! Number of fails        : 8419
+ ! Total memory usage     : 179.9 MB (179.8 MB CP Optimizer + 0.0 MB Concert)
+ ! Time spent in solve    : 6.31s (5.65s engine + 0.67s extraction)
+ ! Search speed (br. / s) : 3220.2
+ ! ----------------------------------------------------------------------------
+
+ DEPTH FIRST
+ ! ----------------------------------------------------------------------------
+ ! Search completed, 84 solutions found.
+ ! Best objective         : 0.00005684341 (optimal - effective tol. is 5.684341e-09)
+ ! Best bound             : 0
+ ! ----------------------------------------------------------------------------
+ ! Number of branches     : 4440
+ ! Number of fails        : 1556
+ ! Total memory usage     : 177.3 MB (177.3 MB CP Optimizer + 0.0 MB Concert)
+ ! Time spent in solve    : 1.33s (0.70s engine + 0.63s extraction)
+ ! Search speed (br. / s) : 6342.9
+ ! ----------------------------------------------------------------------------
+
+ RESTART
+ ! ----------------------------------------------------------------------------
+ ! Search completed, 71 solutions found.
+ ! Best objective         : 0.00005684341 (optimal - effective tol. is 5.684341e-09)
+ ! Best bound             : 0.00005683772
+ ! ----------------------------------------------------------------------------
+ ! Number of branches     : 12565
+ ! Number of fails        : 5468
+ ! Total memory usage     : 180.1 MB (180.0 MB CP Optimizer + 0.0 MB Concert)
+ ! Time spent in solve    : 5.95s (5.19s engine + 0.77s extraction)
+ ! Search speed (br. / s) : 2421.0
+ ! ----------------------------------------------------------------------------
+
+ MULTI POINT
+ ! ----------------------------------------------------------------------------
+ ! Search terminated by limit, 49 solutions found.
+ ! Best objective         : 0.00005684341 (gap is 100.0%)
+ ! Best bound             : 0
+ ! ----------------------------------------------------------------------------
+ ! Number of branches     : 2416607
+ ! Number of fails        : 1282821
+ ! Total memory usage     : 186.1 MB (186.1 MB CP Optimizer + 0.0 MB Concert)
+ ! Time spent in solve    : 600.87s (600.17s engine + 0.71s extraction)
+ ! Search speed (br. / s) : 4026.6
+ ! ----------------------------------------------------------------------------
+
+ ITERATIVE DIVING
+ ! ----------------------------------------------------------------------------
+ ! Search completed, 73 solutions found.
+ ! Best objective         : 0.00005684341 (optimal - effective tol. is 5.684341e-09)
+ ! Best bound             : 0.00005683772
+ ! ----------------------------------------------------------------------------
+ ! Number of branches     : 29284
+ ! Number of fails        : 14174
+ ! Total memory usage     : 180.3 MB (180.2 MB CP Optimizer + 0.0 MB Concert)
+ ! Time spent in solve    : 24.74s (23.27s engine + 1.47s extraction)
+ ! Search speed (br. / s) : 1258.4
+ ! ----------------------------------------------------------------------------
+
+ NEIGHBORHOOD
+ ! ----------------------------------------------------------------------------
+ ! Search terminated by limit, no solution found.
+ ! Best bound             : 0
+ ! ----------------------------------------------------------------------------
+ ! Number of moves        : 6005929
+ ! Total memory usage     : 30.5 MB (30.5 MB CP Optimizer + 0.0 MB Concert)
+ ! Time spent in solve    : 600.79s (600.09s engine + 0.70s extraction)
+ ! Search speed (mv. / s) : 10008.4
+ ! ----------------------------------------------------------------------------
+
+
