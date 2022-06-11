@@ -43,6 +43,17 @@ And, to execute it with the same files, fd statistics and [`min`, `step`, `up`] 
 </path/to/sicstus> -l source/sicstus/main.pl --goal "run('data/new', [min], fd)."
 ```
 
+### OR-Tools
+
+To run the OR-Tools version of the program you first need to [install OR-Tools on your computer](https://developers.google.com/optimization/install)
+
+Then just use the following command on the "or-tools" folder:
+```console
+python main.py
+```
+
+To run the other implementation of a solution to this problem just use the same command but in the "old" sub-folder.
+
 ## Context
 
 This project was made by [Alexandre Abreu](https://github.com/xbreu), [Pedro Seixas](https://github.com/pedrojfs17) and [Xavier Pisco](https://github.com/Xavier-Pisco) for the [Constraint logic programming](https://sigarra.up.pt/feup/en/ucurr_geral.ficha_uc_view?pv_ocorrencia_id=486262) course at FEUP in 2021/2022.
