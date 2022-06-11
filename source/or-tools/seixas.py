@@ -116,16 +116,12 @@ for i in range(N_STUDENTS):
 
 
     # Origin of the flights
-    out = element(model, FLIGHTS_ORIGINS, Outgoing)
-    inc = element(model, FLIGHTS_ORIGINS, Incoming)
-    model.Add(out == StudentOrigin)
-    model.Add(inc == Destination)
+    model.AddElement(Outgoing, FLIGHTS_ORIGINS, StudentOrigin)
+    model.AddElement(Incoming, FLIGHTS_ORIGINS, Destination)
 
     # Destination of the flights
-    out = element(model, FLIGHTS_DESTINATIONS, Outgoing)
-    inc = element(model, FLIGHTS_DESTINATIONS, Incoming)
-    model.Add(out == Destination)
-    model.Add(inc == StudentOrigin)
+    model.AddElement(Outgoing, FLIGHTS_DESTINATIONS, Destination)
+    model.AddElement(Incoming, FLIGHTS_DESTINATIONS, StudentOrigin)
 
     # Availability
     startAvailability = element(model, STUDENTS_START_AVAILABILITIES[i], StudentsAvailabilityIntervals[i])
