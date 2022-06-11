@@ -9,12 +9,18 @@
 % Main function
 % -----------------------------------------------------------------------------
 
-main :-
+run(Folder) :-
+    run(Folder, [min, bisect, down], false).
+
+run(Folder, SearchParameters) :-
+    run(Folder, SearchParameters, false).
+
+run(Folder, SearchParameters, Statistics) :-
     statistics(runtime, [T0|_]),
     % Input
     format('Reading data...', []),
     % Read all data
-    read_data(Data),
+    read_data(Folder, Data),
     % Calculate size of inputs
     format('Done~n', []),
     statistics(runtime, [T1|_]),
@@ -33,24 +39,23 @@ main :-
     format('Finding a solution...', []),
     flatten_variables(Variables, LabelVariables),
     variables_cost(Variables, Cost),
-    labeling([time_out(10000, Flag), minimize(Cost)], LabelVariables), !,
+    append([time_out(10000, Flag), minimize(Cost)], SearchParameters, FinalParameters),
+    labeling(FinalParameters, LabelVariables), !,
     format('Done~n~n', []),
     statistics(runtime, [T2|_]),
 
     % Output
-    print_result(Flag, Data, Variables),
-    statistics(runtime, [T3|_]),
+    print_result(Statistics, Flag, Data, Variables),
 
     TParse is T1 - T0,
     T is T2 - T1,
-    TPrint is T3 - T0,
-    format('Took ~3d + ~3d + ~3d sec.~n', [TParse, T, TPrint]).
+    format('Took ~3d (parse) + ~3d (execution) sec.~n', [TParse, T]).
 
 % -----------------------------------------------------------------------------
 % Final output
 % -----------------------------------------------------------------------------
 
-print_result(Flag, Data, Variables) :-
+print_result(Statistics, Flag, Data, Variables) :-
     format('Result: ~p~n', [Flag]),
     variables_total_cost(Variables, TotalCost),
     format('Total Cost: ~d \x20AC\~n', [TotalCost]),
@@ -73,6 +78,12 @@ print_result(Flag, Data, Variables) :-
     variables_incoming_trips(Variables, IncomingTrips),
     print_student_plans(1, Origins-Destinations-Departures-Arrivals-Prices-Locations, OutgoingTrips-IncomingTrips),
     format('~+~`-t~30|~n', []),
+    print_statistics(Statistics).
+
+print_statistics(false).
+print_statistics(fd) :-
+    fd_statistics.
+print_statistics(all) :-
     fd_statistics,
     statistics.
 

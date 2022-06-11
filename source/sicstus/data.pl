@@ -30,11 +30,13 @@ read_json_from_file(F, R) :-
     read_file(F, Cs),
     json_from_codes(Cs, R).
 
-read_flights_json(R) :-
-    read_json_from_file('data/new/flights.json', R).
+read_flights_json(Folder, R) :-
+    atom_concat(Folder, '/flights.json', File),
+    read_json_from_file(File, R).
 
-read_students_json(R) :-
-    read_json_from_file('data/new/students.json', R).
+read_students_json(Folder, R) :-
+    atom_concat(Folder, '/students.json', File),
+    read_json_from_file(File, R).
 
 % -----------------------------------------------------------------------------
 % Date parsing
@@ -183,9 +185,9 @@ data_possible_destinations([_, PossibleDestinations | _], PossibleDestinations).
 data_minimum_useful_time([_, _, _, MinimumUsefulTime | _], MinimumUsefulTime).
 data_locations([_, _, _, _, Locations | _], Locations).
 
-read_data([Fs, Dis, [Cities, Isss, Iess, MCs, MDs, EDs, LAs], MUT, Ls]) :-
-    read_flights_json(Fj), !,
-    read_students_json(json([students=Sj,minimumTime=MUT,destinations=Ds])), !,
+read_data(Folder, [Fs, Dis, [Cities, Isss, Iess, MCs, MDs, EDs, LAs], MUT, Ls]) :-
+    read_flights_json(Folder, Fj), !,
+    read_students_json(Folder, json([students=Sj,minimumTime=MUT,destinations=Ds])), !,
     flights_to_lists(Fj, Ls, FsHeterogeneous),
     students_to_lists(Sj, Ls, [Cities, Isss, Iess, MCs, MDs, EDs, LAs]),
     homogeneous_flights(Cities, Isss-Iess-EDs-LAs, FsHeterogeneous, Fs),
