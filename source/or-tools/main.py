@@ -112,211 +112,197 @@ FLIGHTS_STOPS = [flight["stops"] for flight in FLIGHTS]
 
 print("Imported", len(FLIGHTS), "flights!")
 
-var_strategy = [cp_model.CHOOSE_LOWEST_MIN,  cp_model.CHOOSE_HIGHEST_MAX,
-                cp_model.CHOOSE_FIRST, cp_model.CHOOSE_MAX_DOMAIN_SIZE, cp_model.CHOOSE_MIN_DOMAIN_SIZE]
-domain_strategy = [cp_model.SELECT_UPPER_HALF, cp_model.SELECT_LOWER_HALF,
-                   cp_model.SELECT_MIN_VALUE, cp_model.SELECT_MAX_VALUE]
-for v in var_strategy:
-    for d in domain_strategy:
-        times = []
-        num_runs = 3
-        for i in range(num_runs):
+model = cp_model.CpModel()
 
-            model = cp_model.CpModel()
+# Chosen Destination
+# model.integer_var(0, len(DESTINATIONS) - 1, "Destination")
+Destination = model.NewIntVar(
+    0, len(DESTINATIONS) - 1, 'Destination')
 
-            # Chosen Destination
-            # model.integer_var(0, len(DESTINATIONS) - 1, "Destination")
-            Destination = model.NewIntVar(
-                0, len(DESTINATIONS) - 1, 'Destination')
+# Indexes of the flights each student has to take
+StudentsFlights = [[model.NewIntVar(0, len(FLIGHTS) - 1, 'Outgoing_Flight'), model.NewIntVar(0, len(FLIGHTS) - 1, 'Incoming_Flight')]
+                    for _ in range(N_STUDENTS)]  # [model.integer_var_list(2, 0, len(FLIGHTS) - 1) for i in range(N_STUDENTS)]
 
-            # Indexes of the flights each student has to take
-            StudentsFlights = [[model.NewIntVar(0, len(FLIGHTS) - 1, 'Outgoing_Flight'), model.NewIntVar(0, len(FLIGHTS) - 1, 'Incoming_Flight')]
-                               for _ in range(N_STUDENTS)]  # [model.integer_var_list(2, 0, len(FLIGHTS) - 1) for i in range(N_STUDENTS)]
+# Student avaliability interval
+StudentsAvailabilityIntervals = [model.NewIntVar(0, N_MAX_INTERVALS, 'Interval') for _ in range(
+    N_STUDENTS)]  # model.integer_var_list(N_STUDENTS, 0, N_MAX_INTERVALS, "Interval")
 
-            # Student avaliability interval
-            StudentsAvailabilityIntervals = [model.NewIntVar(0, N_MAX_INTERVALS, 'Interval') for _ in range(
-                N_STUDENTS)]  # model.integer_var_list(N_STUDENTS, 0, N_MAX_INTERVALS, "Interval")
+# Cost for each of the students
+StudentsCosts = [model.NewIntVar(0, MAXIMUM_FLIGHT_COST, 'StudentCost') for _ in range(
+    N_STUDENTS)]  # model.integer_var_list(N_STUDENTS, 0, MAXIMUM_FLIGHT_COST, "StudentCost")
 
-            # Cost for each of the students
-            StudentsCosts = [model.NewIntVar(0, MAXIMUM_FLIGHT_COST, 'StudentCost') for _ in range(
-                N_STUDENTS)]  # model.integer_var_list(N_STUDENTS, 0, MAXIMUM_FLIGHT_COST, "StudentCost")
+# Total trip cost
+# model.integer_var(0, MAXIMUM_FLIGHT_COST * N_STUDENTS, "TotalCost")
+TotalCost = model.NewIntVar(
+    0, MAXIMUM_FLIGHT_COST*N_STUDENTS, 'TotalCost')
 
-            # Total trip cost
-            # model.integer_var(0, MAXIMUM_FLIGHT_COST * N_STUDENTS, "TotalCost")
-            TotalCost = model.NewIntVar(
-                0, MAXIMUM_FLIGHT_COST*N_STUDENTS, 'TotalCost')
+# Useful time
+# model.integer_var(0, MAXIMUM_USEFUL_TIME, "UsefulTime")
+UsefulTime = model.NewIntVar(
+    MINIMUM_USEFUL_TIME, MAXIMUM_USEFUL_TIME, 'UsefulTime')
 
-            # Useful time
-            # model.integer_var(0, MAXIMUM_USEFUL_TIME, "UsefulTime")
-            UsefulTime = model.NewIntVar(
-                MINIMUM_USEFUL_TIME, MAXIMUM_USEFUL_TIME, 'UsefulTime')
+# Separated Time
+# model.integer_var(0, MAXIMUM_USEFUL_TIME, "SeparatedTime")
+SeparatedTime = model.NewIntVar(-MAX_INT, MAX_INT, 'SeparatedTime')
 
-            # Separated Time
-            # model.integer_var(0, MAXIMUM_USEFUL_TIME, "SeparatedTime")
-            SeparatedTime = model.NewIntVar(-MAX_INT, MAX_INT, 'SeparatedTime')
+def element(model, vars, index):
+    t = model.NewIntVar(-MAX_INT, MAX_INT, 'temp')
+    model.AddElement(index, vars, t)
+    return t
 
-            def element(model, vars, index):
-                t = model.NewIntVar(-MAX_INT, MAX_INT, 'temp')
-                model.AddElement(index, vars, t)
-                return t
+first_outgoing_times = [model.NewIntVar(
+    0, MAX_INT, 'first_out_time') for i in range(N_STUDENTS)]
+last_outgoing_times = [model.NewIntVar(
+    0, MAX_INT, 'last_out_time') for i in range(N_STUDENTS)]
+first_incoming_times = [model.NewIntVar(
+    0, MAX_INT, 'first_inc_time') for i in range(N_STUDENTS)]
+last_incoming_times = [model.NewIntVar(
+    0, MAX_INT, 'last_inc_time') for i in range(N_STUDENTS)]
+for i in range(N_STUDENTS):
+    Outgoing, Incoming = StudentsFlights[i]
+    StudentOrigin = STUDENTS_ORIGINS[i]
 
-            first_outgoing_times = [model.NewIntVar(
-                0, MAX_INT, 'first_out_time') for i in range(N_STUDENTS)]
-            last_outgoing_times = [model.NewIntVar(
-                0, MAX_INT, 'last_out_time') for i in range(N_STUDENTS)]
-            first_incoming_times = [model.NewIntVar(
-                0, MAX_INT, 'first_inc_time') for i in range(N_STUDENTS)]
-            last_incoming_times = [model.NewIntVar(
-                0, MAX_INT, 'last_inc_time') for i in range(N_STUDENTS)]
-            for i in range(N_STUDENTS):
-                Outgoing, Incoming = StudentsFlights[i]
-                StudentOrigin = STUDENTS_ORIGINS[i]
+    # Origin of the flights
+    model.AddElement(Outgoing, FLIGHTS_ORIGINS, StudentOrigin)
+    model.AddElement(Incoming, FLIGHTS_ORIGINS, Destination)
 
-                # Origin of the flights
-                model.AddElement(Outgoing, FLIGHTS_ORIGINS, StudentOrigin)
-                model.AddElement(Incoming, FLIGHTS_ORIGINS, Destination)
+    # Destination of the flights
+    model.AddElement(Outgoing, FLIGHTS_DESTINATIONS, Destination)
+    model.AddElement(Incoming, FLIGHTS_DESTINATIONS, StudentOrigin)
 
-                # Destination of the flights
-                model.AddElement(Outgoing, FLIGHTS_DESTINATIONS, Destination)
-                model.AddElement(Incoming, FLIGHTS_DESTINATIONS, StudentOrigin)
+    # Availability
+    startAvailability = element(
+        model, STUDENTS_START_AVAILABILITIES[i], StudentsAvailabilityIntervals[i])
+    endAvailability = element(
+        model, STUDENTS_END_AVAILABILITIES[i], StudentsAvailabilityIntervals[i])
+    out = element(model, FLIGHTS_DEPARTURES, Outgoing)
+    inc = element(model, FLIGHTS_ARRIVALS, Incoming)
+    model.Add(out >= startAvailability)
+    model.Add(inc <= endAvailability)
 
-                # Availability
-                startAvailability = element(
-                    model, STUDENTS_START_AVAILABILITIES[i], StudentsAvailabilityIntervals[i])
-                endAvailability = element(
-                    model, STUDENTS_END_AVAILABILITIES[i], StudentsAvailabilityIntervals[i])
-                out = element(model, FLIGHTS_DEPARTURES, Outgoing)
-                inc = element(model, FLIGHTS_ARRIVALS, Incoming)
-                model.Add(out >= startAvailability)
-                model.Add(inc <= endAvailability)
+    # Outgoing arrival time must be before Incoming departure time
+    out = element(model, FLIGHTS_ARRIVALS, Outgoing)
+    inc = element(model, FLIGHTS_DEPARTURES, Incoming)
+    model.Add(out < inc)
 
-                # Outgoing arrival time must be before Incoming departure time
-                out = element(model, FLIGHTS_ARRIVALS, Outgoing)
-                inc = element(model, FLIGHTS_DEPARTURES, Incoming)
-                model.Add(out < inc)
+    # Earliest departure
+    out = element(model, FLIGHTS_DEPARTURE_TIMES, Outgoing)
+    inc = element(model, FLIGHTS_DEPARTURE_TIMES, Incoming)
+    student_departure = element(model, STUDENTS_DEPARTURES, i)
+    model.Add(out >= student_departure)
+    model.Add(inc >= student_departure)
 
-                # Earliest departure
-                out = element(model, FLIGHTS_DEPARTURE_TIMES, Outgoing)
-                inc = element(model, FLIGHTS_DEPARTURE_TIMES, Incoming)
-                student_departure = element(model, STUDENTS_DEPARTURES, i)
-                model.Add(out >= student_departure)
-                model.Add(inc >= student_departure)
+    # Latest arrival
+    out = element(model, FLIGHTS_ARRIVAL_TIMES, Outgoing)
+    inc = element(model, FLIGHTS_ARRIVAL_TIMES, Incoming)
+    student_arrival = element(model, STUDENTS_ARRIVALS, i)
+    model.Add(out <= student_arrival)
+    model.Add(inc <= student_arrival)
 
-                # Latest arrival
-                out = element(model, FLIGHTS_ARRIVAL_TIMES, Outgoing)
-                inc = element(model, FLIGHTS_ARRIVAL_TIMES, Incoming)
-                student_arrival = element(model, STUDENTS_ARRIVALS, i)
-                model.Add(out <= student_arrival)
-                model.Add(inc <= student_arrival)
+    # Maximum number of stops
+    out = element(model, FLIGHTS_STOPS, Outgoing)
+    inc = element(model, FLIGHTS_STOPS, Incoming)
+    student_stops = element(model, STUDENTS_STOPS, i)
+    model.Add(out <= student_stops)
+    model.Add(inc <= student_stops)
 
-                # Maximum number of stops
-                out = element(model, FLIGHTS_STOPS, Outgoing)
-                inc = element(model, FLIGHTS_STOPS, Incoming)
-                student_stops = element(model, STUDENTS_STOPS, i)
-                model.Add(out <= student_stops)
-                model.Add(inc <= student_stops)
+    # Maximum flight duration
+    out = element(model, FLIGHTS_DURATIONS, Outgoing)
+    inc = element(model, FLIGHTS_DURATIONS, Incoming)
+    student_duration = element(model, STUDENTS_DURATIONS, i)
+    model.Add(out < student_duration)
+    model.Add(inc < student_duration)
 
-                # Maximum flight duration
-                out = element(model, FLIGHTS_DURATIONS, Outgoing)
-                inc = element(model, FLIGHTS_DURATIONS, Incoming)
-                student_duration = element(model, STUDENTS_DURATIONS, i)
-                model.Add(out < student_duration)
-                model.Add(inc < student_duration)
+    # Student Cost
+    out_cost = element(model, FLIGHTS_COSTS, StudentsFlights[i][0])
+    inc_cost = element(model, FLIGHTS_COSTS, StudentsFlights[i][1])
+    model.Add(inc_cost + out_cost == StudentsCosts[i])
 
-                # Student Cost
-                out_cost = element(model, FLIGHTS_COSTS, StudentsFlights[i][0])
-                inc_cost = element(model, FLIGHTS_COSTS, StudentsFlights[i][1])
-                model.Add(inc_cost + out_cost == StudentsCosts[i])
+    # First outgoing times
+    out_time = element(model, first_outgoing_times, i)
+    time = element(model, FLIGHTS_ARRIVALS, StudentsFlights[i][0])
+    model.Add(out_time == time)
 
-                # First outgoing times
-                out_time = element(model, first_outgoing_times, i)
-                time = element(model, FLIGHTS_ARRIVALS, StudentsFlights[i][0])
-                model.Add(out_time == time)
+    # Last outgoing times
+    out_time = element(model, last_outgoing_times, i)
+    time = element(model, FLIGHTS_ARRIVALS, StudentsFlights[i][0])
+    model.Add(out_time == time)
 
-                # Last outgoing times
-                out_time = element(model, last_outgoing_times, i)
-                time = element(model, FLIGHTS_ARRIVALS, StudentsFlights[i][0])
-                model.Add(out_time == time)
+    # First incoming times
+    inc_time = element(model, first_incoming_times, i)
+    time = element(model, FLIGHTS_DEPARTURES,
+                    StudentsFlights[i][1])
+    model.Add(inc_time == time)
 
-                # First incoming times
-                inc_time = element(model, first_incoming_times, i)
-                time = element(model, FLIGHTS_DEPARTURES,
-                               StudentsFlights[i][1])
-                model.Add(inc_time == time)
+    # Last incoming times
+    inc_time = element(model, last_incoming_times, i)
+    time = element(model, FLIGHTS_DEPARTURES,
+                    StudentsFlights[i][1])
+    model.Add(inc_time == time)
 
-                # Last incoming times
-                inc_time = element(model, last_incoming_times, i)
-                time = element(model, FLIGHTS_DEPARTURES,
-                               StudentsFlights[i][1])
-                model.Add(inc_time == time)
+firstOutgoingTime = model.NewIntVar(0, MAX_INT, 'first_out')
+model.AddMinEquality(firstOutgoingTime, first_outgoing_times)
+lastOutgoingTime = model.NewIntVar(0, MAX_INT, 'last_out')
+model.AddMaxEquality(lastOutgoingTime, last_outgoing_times)
+firstIncomingTime = model.NewIntVar(0, MAX_INT, 'first_inc')
+model.AddMinEquality(firstIncomingTime, first_incoming_times)
+lastIncomingTime = model.NewIntVar(0, MAX_INT, 'last_inc')
+model.AddMaxEquality(lastIncomingTime, last_incoming_times)
 
-            firstOutgoingTime = model.NewIntVar(0, MAX_INT, 'first_out')
-            model.AddMinEquality(firstOutgoingTime, first_outgoing_times)
-            lastOutgoingTime = model.NewIntVar(0, MAX_INT, 'last_out')
-            model.AddMaxEquality(lastOutgoingTime, last_outgoing_times)
-            firstIncomingTime = model.NewIntVar(0, MAX_INT, 'first_inc')
-            model.AddMinEquality(firstIncomingTime, first_incoming_times)
-            lastIncomingTime = model.NewIntVar(0, MAX_INT, 'last_inc')
-            model.AddMaxEquality(lastIncomingTime, last_incoming_times)
+# Useful Time
+model.Add(UsefulTime == firstIncomingTime - lastOutgoingTime)
+model.Add(UsefulTime >= MINIMUM_USEFUL_TIME)
 
-            # Useful Time
-            model.Add(UsefulTime == firstIncomingTime - lastOutgoingTime)
-            model.Add(UsefulTime >= MINIMUM_USEFUL_TIME)
+# Separated Time
+model.Add(SeparatedTime == (
+    lastOutgoingTime - firstOutgoingTime) + (lastIncomingTime - firstIncomingTime))
 
-            # Separated Time
-            model.Add(SeparatedTime == (
-                lastOutgoingTime - firstOutgoingTime) + (lastIncomingTime - firstIncomingTime))
+# Total cost
+model.Add(TotalCost == sum(StudentsCosts))
 
-            # Total cost
-            model.Add(TotalCost == sum(StudentsCosts))
+# Minimize function
+function = model.NewIntVar(0, MAX_INT, 'function')
+# model.Add(function == TotalCost + UsefulTime - SeparatedTime)
+model.AddDivisionEquality(
+    function, TotalCost*1000000000, UsefulTime)
+model.Minimize(function)
 
-            # Minimize function
-            function = model.NewIntVar(0, MAX_INT, 'function')
-            # model.Add(function == TotalCost + UsefulTime - SeparatedTime)
-            model.AddDivisionEquality(
-                function, TotalCost*1000000000, UsefulTime)
-            model.Minimize(function)
+Vars = [Destination] + \
+    [flight for student in StudentsFlights for flight in student]
+# Varchooser = model.select_largest(model.var_success_rate())
+# Valuechooser = model.select_random_value()
+model.AddDecisionStrategy(Vars, cp_model.CHOOSE_FIRST, cp_model.SELECT_MIN_VALUE)
+solver = cp_model.CpSolver()
 
-            Vars = [Destination] + \
-                [flight for student in StudentsFlights for flight in student]
-            # Varchooser = model.select_largest(model.var_success_rate())
-            # Valuechooser = model.select_random_value()
-            model.AddDecisionStrategy(Vars, v, d)
-            solver = cp_model.CpSolver()
+# Find optimal solution
+status = solver.Solve(model)
 
-            # Find optimal solution
-            status = solver.Solve(model)
+# Limit to N solutions
+# solution_printer = VarArraySolutionPrinterWithLimit(Vars, 5)
+# solver.parameters.enumerate_all_solutions = True
+# status = solver.Solve(model, solution_printer)
 
-            # Limit to N solutions
-            # solution_printer = VarArraySolutionPrinterWithLimit(Vars, 5)
-            # solver.parameters.enumerate_all_solutions = True
-            # status = solver.Solve(model, solution_printer)
-            
-            # print(solver._CpSolver__solution)
-            # print(solver.ResponseStats())
-            print("status: " + solver.StatusName())
-            print("wallTime: " + str(solver.WallTime()))
-            times.append(solver.WallTime())
-            # print("userTime: " + str(solver.UserTime()))
-            if status == cp_model.OPTIMAL or status == cp_model.FEASIBLE:
-                print("--> Function: " + str(solver.Value(function)))
-                print("--> Destination: " + DESTINATIONS[solver.Value(Destination)])
-                print("--> Total Cost: " + str(solver.Value(TotalCost)))
-                print("--> Useful Time: " + str(solver.Value(UsefulTime)))
-                print("--> Separated Time: " + str(solver.Value(SeparatedTime)))
-                print("--> Students:")
+# print(solver._CpSolver__solution)
+# print(solver.ResponseStats())
+print("status: " + solver.StatusName())
+print("wallTime: " + str(solver.WallTime()))
+# print("userTime: " + str(solver.UserTime()))
+if status == cp_model.OPTIMAL or status == cp_model.FEASIBLE:
+    print("--> Function: " + str(solver.Value(function)))
+    print("--> Destination: " + DESTINATIONS[solver.Value(Destination)])
+    print("--> Total Cost: " + str(solver.Value(TotalCost)))
+    print("--> Useful Time: " + str(solver.Value(UsefulTime)))
+    print("--> Separated Time: " + str(solver.Value(SeparatedTime)))
+    print("--> Students:")
 
-                for i in range(N_STUDENTS):
-                    Outgoing, Incoming = StudentsFlights[i]
+    for i in range(N_STUDENTS):
+        Outgoing, Incoming = StudentsFlights[i]
 
-                    print("    --> Student " + str(i + 1) + " departing from " + STUDENTS_INFO[i]["city"] + ":")
+        print("    --> Student " + str(i + 1) + " departing from " + STUDENTS_INFO[i]["city"] + ":")
 
-                    if STUDENTS_ORIGINS[i] == solver.Value(Destination):
-                        print("       - Student need not to take any flights!")
-                    else:
-                        print("       -", list(FLIGHTS[solver.Value(Outgoing)].items())[2:])
-                        print("       -", list(FLIGHTS[solver.Value(Incoming)].items())[2:])
+        if STUDENTS_ORIGINS[i] == solver.Value(Destination):
+            print("       - Student need not to take any flights!")
+        else:
+            print("       -", list(FLIGHTS[solver.Value(Outgoing)].items())[2:])
+            print("       -", list(FLIGHTS[solver.Value(Incoming)].items())[2:])
 
-        print(sum(times) / num_runs)
-        print("\n\n")
-        sleep(2)
