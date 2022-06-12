@@ -2,11 +2,9 @@
 
 ## Usage
 
-In this section we will present the commands needed to run each implementation of the application in the root directory of the project.
-
 ### SICStus
 
-To run the SICStus program, use the following command:
+To run the SICStus program, execute the following command in the root directory of the project:
 
 ```console
 </path/to/sicstus> -l source/sicstus/main.pl --goal "<run_predicate>."
@@ -53,6 +51,10 @@ python main.py
 ```
 
 To run the other implementation of a solution to this problem just use the same command but in the "old" sub-folder.
+
+### DOcplex
+
+To run the DOcplext version of the program, execute the Jupyter Notebook on [source/cplex/model.ipynb](../source/cplex/model.ipynb).
 
 ## Context
 
